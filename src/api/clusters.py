@@ -129,4 +129,21 @@ async def restart_cluster(cluster_id: str) -> Dict[str, Any]:
         DatabricksAPIError: If the API request fails
     """
     logger.info(f"Restarting cluster: {cluster_id}")
-    return make_api_request("POST", "/api/2.0/clusters/restart", data={"cluster_id": cluster_id}) 
+    return make_api_request("POST", "/api/2.0/clusters/restart", data={"cluster_id": cluster_id})
+
+
+async def permanent_delete_cluster(cluster_id: str) -> Dict[str, Any]:
+    """
+    Permanently delete a Databricks cluster.
+    
+    Args:
+        cluster_id: ID of the cluster to permanently delete
+        
+    Returns:
+        Empty response on success
+        
+    Raises:
+        DatabricksAPIError: If the API request fails
+    """
+    logger.info(f"Permanently deleting cluster: {cluster_id}")
+    return make_api_request("POST", "/api/2.1/clusters/permanent-delete", data={"cluster_id": cluster_id}) 

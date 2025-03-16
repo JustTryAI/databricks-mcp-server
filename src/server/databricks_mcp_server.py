@@ -140,6 +140,19 @@ class DatabricksMCPServer(FastMCP):
                 logger.error(f"Error resizing cluster: {str(e)}")
                 return [{"text": json.dumps({"error": str(e)})}]
         
+        @self.tool(
+            name="permanently_delete_cluster",
+            description="Permanently delete a Databricks cluster with parameter: cluster_id (required)",
+        )
+        async def permanently_delete_cluster(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Permanently deleting cluster with params: {params}")
+            try:
+                result = await clusters.permanent_delete_cluster(params.get("cluster_id"))
+                return [{"text": json.dumps(result)}]
+            except Exception as e:
+                logger.error(f"Error permanently deleting cluster: {str(e)}")
+                return [{"text": json.dumps({"error": str(e)})}]
+        
         # Job management tools
         @self.tool(
             name="list_jobs",
@@ -318,6 +331,96 @@ class DatabricksMCPServer(FastMCP):
                 return [{"text": json.dumps(result)}]
             except Exception as e:
                 logger.error(f"Error listing files: {str(e)}")
+                return [{"text": json.dumps({"error": str(e)})}]
+        
+        # Workspace tools
+        @self.tool(
+            name="list_workspace_files",
+            description="List files and directories in a workspace path with parameter: path (required)",
+        )
+        async def list_workspace_files(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Listing workspace files with params: {params}")
+            try:
+                result = await workspace.list_files(params.get("path"))
+                return [{"text": json.dumps(result)}]
+            except Exception as e:
+                logger.error(f"Error listing workspace files: {str(e)}")
+                return [{"text": json.dumps({"error": str(e)})}]
+        
+        @self.tool(
+            name="import_workspace_file",
+            description="Import a file to the workspace with parameters: path (required), format (required), content (required), language (optional), overwrite (optional)",
+        )
+        async def import_workspace_file(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Importing workspace file with params: {params}")
+            try:
+                path = params.get("path")
+                format = params.get("format")
+                content = params.get("content")
+                language = params.get("language")
+                overwrite = params.get("overwrite", False)
+                result = await workspace.import_files(path, format, content, language, overwrite)
+                return [{"text": json.dumps(result)}]
+            except Exception as e:
+                logger.error(f"Error importing workspace file: {str(e)}")
+                return [{"text": json.dumps({"error": str(e)})}]
+        
+        @self.tool(
+            name="export_workspace_file",
+            description="Export a file from the workspace with parameters: path (required), format (required)",
+        )
+        async def export_workspace_file(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Exporting workspace file with params: {params}")
+            try:
+                path = params.get("path")
+                format = params.get("format")
+                result = await workspace.export_files(path, format)
+                return [{"text": json.dumps(result)}]
+            except Exception as e:
+                logger.error(f"Error exporting workspace file: {str(e)}")
+                return [{"text": json.dumps({"error": str(e)})}]
+        
+        @self.tool(
+            name="delete_workspace_file",
+            description="Delete a file or directory from the workspace with parameters: path (required), recursive (optional)",
+        )
+        async def delete_workspace_file(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Deleting workspace file with params: {params}")
+            try:
+                path = params.get("path")
+                recursive = params.get("recursive", False)
+                result = await workspace.delete_files(path, recursive)
+                return [{"text": json.dumps(result)}]
+            except Exception as e:
+                logger.error(f"Error deleting workspace file: {str(e)}")
+                return [{"text": json.dumps({"error": str(e)})}]
+        
+        @self.tool(
+            name="get_workspace_status",
+            description="Get the status of a file or directory in the workspace with parameter: path (required)",
+        )
+        async def get_workspace_status(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Getting workspace status with params: {params}")
+            try:
+                path = params.get("path")
+                result = await workspace.get_file_status(path)
+                return [{"text": json.dumps(result)}]
+            except Exception as e:
+                logger.error(f"Error getting workspace status: {str(e)}")
+                return [{"text": json.dumps({"error": str(e)})}]
+        
+        @self.tool(
+            name="create_workspace_directory",
+            description="Create directories in the workspace with parameter: path (required)",
+        )
+        async def create_workspace_directory(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Creating workspace directory with params: {params}")
+            try:
+                path = params.get("path")
+                result = await workspace.mkdirs(path)
+                return [{"text": json.dumps(result)}]
+            except Exception as e:
+                logger.error(f"Error creating workspace directory: {str(e)}")
                 return [{"text": json.dumps({"error": str(e)})}]
         
         # SQL tools
@@ -1841,6 +1944,66 @@ class DatabricksMCPServer(FastMCP):
             except Exception as e:
                 logger.error(f"Error updating SQL warehouse: {str(e)}")
                 return [TextContent(type="text", text=f"Error updating SQL warehouse: {str(e)}")]
+
+        @self.tool(
+            name="delete_warehouse",
+            description="Delete a SQL warehouse with parameter: id (required)",
+        )
+        async def delete_warehouse(params: Dict[str, Any]) -> List[TextContent]:
+            try:
+                warehouse_id = params.get("id")
+                if not warehouse_id:
+                    return [TextContent(type="text", text="Error: id is required")]
+                
+                result = await warehouses.delete_warehouse(warehouse_id)
+                return [TextContent(type="text", text=json.dumps(result, indent=2))]
+            except Exception as e:
+                logger.error(f"Error deleting SQL warehouse: {str(e)}")
+                return [TextContent(type="text", text=f"Error deleting SQL warehouse: {str(e)}")]
+
+        @self.tool(
+            name="stop_warehouse",
+            description="Stop a SQL warehouse with parameter: id (required)",
+        )
+        async def stop_warehouse(params: Dict[str, Any]) -> List[TextContent]:
+            try:
+                warehouse_id = params.get("id")
+                if not warehouse_id:
+                    return [TextContent(type="text", text="Error: id is required")]
+                
+                result = await warehouses.stop_warehouse(warehouse_id)
+                return [TextContent(type="text", text=json.dumps(result, indent=2))]
+            except Exception as e:
+                logger.error(f"Error stopping SQL warehouse: {str(e)}")
+                return [TextContent(type="text", text=f"Error stopping SQL warehouse: {str(e)}")]
+
+        @self.tool(
+            name="list_warehouses",
+            description="List all SQL warehouses",
+        )
+        async def list_warehouses(params: Dict[str, Any]) -> List[TextContent]:
+            try:
+                result = await warehouses.list_warehouses()
+                return [TextContent(type="text", text=json.dumps(result, indent=2))]
+            except Exception as e:
+                logger.error(f"Error listing SQL warehouses: {str(e)}")
+                return [TextContent(type="text", text=f"Error listing SQL warehouses: {str(e)}")]
+
+        @self.tool(
+            name="get_warehouse",
+            description="Get information about a specific SQL warehouse with parameter: id (required)",
+        )
+        async def get_warehouse(params: Dict[str, Any]) -> List[TextContent]:
+            try:
+                warehouse_id = params.get("id")
+                if not warehouse_id:
+                    return [TextContent(type="text", text="Error: id is required")]
+                
+                result = await warehouses.get_warehouse(warehouse_id)
+                return [TextContent(type="text", text=json.dumps(result, indent=2))]
+            except Exception as e:
+                logger.error(f"Error getting SQL warehouse: {str(e)}")
+                return [TextContent(type="text", text=f"Error getting SQL warehouse: {str(e)}")]
 
 
 async def main():
