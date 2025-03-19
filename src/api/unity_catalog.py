@@ -498,6 +498,28 @@ async def delete_storage_credential(name: str) -> Dict[str, Any]:
     return make_api_request("DELETE", f"/api/2.1/unity-catalog/storage-credentials/{name}")
 
 
+async def list_storage_credentials(max_results: Optional[int] = None) -> Dict[str, Any]:
+    """
+    List storage credentials in the Unity Catalog.
+    
+    Args:
+        max_results: Optional maximum number of storage credentials to return
+        
+    Returns:
+        Response containing a list of storage credentials
+        
+    Raises:
+        DatabricksAPIError: If the API request fails
+    """
+    logger.info("Listing storage credentials")
+    
+    params = {}
+    if max_results:
+        params["max_results"] = max_results
+    
+    return make_api_request("GET", "/api/2.1/unity-catalog/storage-credentials", params=params)
+
+
 # Volumes
 async def create_volume(
     name: str,
@@ -604,6 +626,45 @@ async def delete_volume(full_name: str) -> Dict[str, Any]:
     """
     logger.info(f"Deleting volume: {full_name}")
     return make_api_request("DELETE", f"/api/2.1/unity-catalog/volumes/{full_name}")
+
+
+async def list_volumes(
+    catalog_name: Optional[str] = None,
+    schema_name: Optional[str] = None,
+    max_results: Optional[int] = None,
+    page_token: Optional[str] = None
+) -> Dict[str, Any]:
+    """
+    List volumes in the Unity Catalog.
+    
+    Args:
+        catalog_name: Optional catalog name to filter volumes by
+        schema_name: Optional schema name to filter volumes by (requires catalog_name)
+        max_results: Optional maximum number of volumes to return
+        page_token: Optional pagination token for large result sets
+        
+    Returns:
+        Response containing a list of volumes
+        
+    Raises:
+        DatabricksAPIError: If the API request fails
+    """
+    if schema_name and not catalog_name:
+        raise ValueError("catalog_name is required when schema_name is provided")
+    
+    logger.info(f"Listing volumes{f' in {catalog_name}.{schema_name}' if schema_name else f' in catalog {catalog_name}' if catalog_name else ''}")
+    
+    params = {}
+    if catalog_name:
+        params["catalog_name"] = catalog_name
+    if schema_name:
+        params["schema_name"] = schema_name
+    if max_results:
+        params["max_results"] = max_results
+    if page_token:
+        params["page_token"] = page_token
+    
+    return make_api_request("GET", "/api/2.1/unity-catalog/volumes", params=params)
 
 
 # Connections

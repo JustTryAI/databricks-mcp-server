@@ -90,4 +90,7 @@ async def list_library_statuses(cluster_id: str) -> Dict[str, Any]:
         DatabricksAPIError: If the API request fails
     """
     logger.info(f"Getting library statuses for cluster: {cluster_id}")
-    return make_api_request("GET", f"/api/2.0/libraries/cluster-status?cluster_id={cluster_id}") 
+    return make_api_request("GET", f"/api/2.0/libraries/cluster-status?cluster_id={cluster_id}")
+
+# Alias list_library_statuses as get_library_statuses for backward compatibility
+get_library_statuses = list_library_statuses 

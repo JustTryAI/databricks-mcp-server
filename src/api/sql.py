@@ -162,4 +162,42 @@ async def cancel_statement(statement_id: str) -> Dict[str, Any]:
         DatabricksAPIError: If the API request fails
     """
     logger.info(f"Cancelling SQL statement: {statement_id}")
-    return make_api_request("POST", f"/api/2.0/sql/statements/{statement_id}/cancel", data={}) 
+    return make_api_request("POST", f"/api/2.0/sql/statements/{statement_id}/cancel", data={})
+
+
+async def execute_sql(
+    statement: str,
+    warehouse_id: str,
+    catalog: Optional[str] = None,
+    schema: Optional[str] = None,
+    parameters: Optional[Dict[str, Any]] = None,
+    row_limit: int = 10000,
+    byte_limit: int = 100000000,  # 100MB
+) -> Dict[str, Any]:
+    """
+    Execute a SQL statement (alias for execute_statement).
+    
+    Args:
+        statement: The SQL statement to execute
+        warehouse_id: ID of the SQL warehouse to use
+        catalog: Optional catalog to use
+        schema: Optional schema to use
+        parameters: Optional statement parameters
+        row_limit: Maximum number of rows to return
+        byte_limit: Maximum number of bytes to return
+        
+    Returns:
+        Response containing query results
+        
+    Raises:
+        DatabricksAPIError: If the API request fails
+    """
+    return await execute_statement(
+        statement=statement,
+        warehouse_id=warehouse_id,
+        catalog=catalog,
+        schema=schema,
+        parameters=parameters,
+        row_limit=row_limit,
+        byte_limit=byte_limit
+    ) 

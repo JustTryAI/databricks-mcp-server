@@ -174,6 +174,10 @@ async def get_file(
     return response
 
 
+# Alias get_file as read_file for backward compatibility
+read_file = get_file
+
+
 async def list_files(dbfs_path: str) -> Dict[str, Any]:
     """
     List files and directories in a DBFS path.
@@ -250,4 +254,65 @@ async def create_directory(dbfs_path: str) -> Dict[str, Any]:
         DatabricksAPIError: If the API request fails
     """
     logger.info(f"Creating DBFS directory: {dbfs_path}")
-    return make_api_request("POST", "/api/2.0/dbfs/mkdirs", data={"path": dbfs_path}) 
+    return make_api_request("POST", "/api/2.0/dbfs/mkdirs", data={"path": dbfs_path})
+
+
+async def import_file(
+    source_path: str,
+    target_path: str,
+    overwrite: bool = False,
+) -> Dict[str, Any]:
+    """
+    Import a file to DBFS from local path.
+    
+    Args:
+        source_path: Local path to the file to import
+        target_path: The path where the file should be stored in DBFS
+        overwrite: Whether to overwrite an existing file
+        
+    Returns:
+        Response on success
+        
+    Raises:
+        DatabricksAPIError: If the API request fails
+        FileNotFoundError: If the source file does not exist
+    """
+    logger.info(f"Importing file from {source_path} to DBFS path: {target_path}")
+    
+    if not os.path.exists(source_path):
+        raise FileNotFoundError(f"Local file not found: {source_path}")
+    
+    # Read the file content
+    with open(source_path, "rb") as f:
+        file_content = f.read()
+    
+    # Upload the file
+    return await put_file(target_path, file_content, overwrite)
+
+
+async def move_file(
+    source_path: str,
+    target_path: str,
+) -> Dict[str, Any]:
+    """
+    Move a file in DBFS.
+    
+    Args:
+        source_path: The current path of the file in DBFS
+        target_path: The new path for the file in DBFS
+        
+    Returns:
+        Empty response on success
+        
+    Raises:
+        DatabricksAPIError: If the API request fails
+    """
+    logger.info(f"Moving file from {source_path} to {target_path}")
+    return make_api_request(
+        "POST",
+        "/api/2.0/dbfs/move",
+        data={
+            "source_path": source_path,
+            "destination_path": target_path,
+        },
+    ) 

@@ -19,6 +19,7 @@ from mcp.server.stdio import stdio_server
 
 from src.api import clusters, dbfs, jobs, notebooks, sql, unity_catalog, sql_queries, commands, libraries, workspace, pipelines, service_principals, lakeview, warehouses, budgets, external_locations
 from src.core.config import settings
+from src.core.utils import generate_tool_description, API_ENDPOINTS
 
 # Configure logging
 logging.basicConfig(
@@ -49,7 +50,11 @@ class DatabricksMCPServer(FastMCP):
         # Cluster management tools
         @self.tool(
             name="list_clusters",
-            description="List all Databricks clusters",
+            description=generate_tool_description(
+                clusters.list_clusters,
+                API_ENDPOINTS["list_clusters"]["method"],
+                API_ENDPOINTS["list_clusters"]["endpoint"]
+            ),
         )
         async def list_clusters(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Listing clusters with params: {params}")
@@ -62,7 +67,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="create_cluster",
-            description="Create a new Databricks cluster with parameters: cluster_name (required), spark_version (required), node_type_id (required), num_workers, autotermination_minutes",
+            description=generate_tool_description(
+                clusters.create_cluster,
+                API_ENDPOINTS["create_cluster"]["method"],
+                API_ENDPOINTS["create_cluster"]["endpoint"]
+            ),
         )
         async def create_cluster(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Creating cluster with params: {params}")
@@ -75,7 +84,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="terminate_cluster",
-            description="Terminate a Databricks cluster with parameter: cluster_id (required)",
+            description=generate_tool_description(
+                clusters.terminate_cluster,
+                API_ENDPOINTS["terminate_cluster"]["method"],
+                API_ENDPOINTS["terminate_cluster"]["endpoint"]
+            ),
         )
         async def terminate_cluster(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Terminating cluster with params: {params}")
@@ -88,7 +101,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="get_cluster",
-            description="Get information about a specific Databricks cluster with parameter: cluster_id (required)",
+            description=generate_tool_description(
+                clusters.get_cluster,
+                API_ENDPOINTS["get_cluster"]["method"],
+                API_ENDPOINTS["get_cluster"]["endpoint"]
+            ),
         )
         async def get_cluster(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Getting cluster info with params: {params}")
@@ -101,7 +118,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="start_cluster",
-            description="Start a terminated Databricks cluster with parameter: cluster_id (required)",
+            description=generate_tool_description(
+                clusters.start_cluster,
+                API_ENDPOINTS["start_cluster"]["method"],
+                API_ENDPOINTS["start_cluster"]["endpoint"]
+            ),
         )
         async def start_cluster(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Starting cluster with params: {params}")
@@ -114,7 +135,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="restart_cluster",
-            description="Restart a Databricks cluster with parameter: cluster_id (required)",
+            description=generate_tool_description(
+                clusters.restart_cluster,
+                API_ENDPOINTS["restart_cluster"]["method"],
+                API_ENDPOINTS["restart_cluster"]["endpoint"]
+            ),
         )
         async def restart_cluster(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Restarting cluster with params: {params}")
@@ -127,7 +152,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="resize_cluster",
-            description="Resize a Databricks cluster with parameters: cluster_id (required), num_workers (required)",
+            description=generate_tool_description(
+                clusters.resize_cluster,
+                API_ENDPOINTS["resize_cluster"]["method"],
+                API_ENDPOINTS["resize_cluster"]["endpoint"]
+            ),
         )
         async def resize_cluster(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Resizing cluster with params: {params}")
@@ -142,7 +171,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="permanently_delete_cluster",
-            description="Permanently delete a Databricks cluster with parameter: cluster_id (required)",
+            description=generate_tool_description(
+                clusters.permanent_delete_cluster,
+                API_ENDPOINTS["permanent_delete_cluster"]["method"],
+                API_ENDPOINTS["permanent_delete_cluster"]["endpoint"]
+            ),
         )
         async def permanently_delete_cluster(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Permanently deleting cluster with params: {params}")
@@ -156,7 +189,11 @@ class DatabricksMCPServer(FastMCP):
         # Job management tools
         @self.tool(
             name="list_jobs",
-            description="List all Databricks jobs",
+            description=generate_tool_description(
+                jobs.list_jobs,
+                API_ENDPOINTS["list_jobs"]["method"],
+                API_ENDPOINTS["list_jobs"]["endpoint"]
+            ),
         )
         async def list_jobs(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Listing jobs with params: {params}")
@@ -169,7 +206,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="run_job",
-            description="Run a Databricks job with parameters: job_id (required), notebook_params (optional)",
+            description=generate_tool_description(
+                jobs.run_job,
+                API_ENDPOINTS["run_job"]["method"],
+                API_ENDPOINTS["run_job"]["endpoint"]
+            ),
         )
         async def run_job(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Running job with params: {params}")
@@ -183,7 +224,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="update_job",
-            description="Update an existing job with parameters: job_id (required), new_settings (required)",
+            description=generate_tool_description(
+                jobs.update_job,
+                API_ENDPOINTS["update_job"]["method"],
+                API_ENDPOINTS["update_job"]["endpoint"]
+            ),
         )
         async def update_job(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Updating job with params: {params}")
@@ -198,7 +243,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="reset_job",
-            description="Reset a job with parameter: job_id (required)",
+            description=generate_tool_description(
+                jobs.reset_job,
+                API_ENDPOINTS["reset_job"]["method"],
+                API_ENDPOINTS["reset_job"]["endpoint"]
+            ),
         )
         async def reset_job(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Resetting job with params: {params}")
@@ -212,7 +261,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="get_job_run_output",
-            description="Get output for a job run with parameter: run_id (required)",
+            description=generate_tool_description(
+                jobs.get_run_output,
+                API_ENDPOINTS["get_run_output"]["method"],
+                API_ENDPOINTS["get_run_output"]["endpoint"]
+            ),
         )
         async def get_job_run_output(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Getting job run output with params: {params}")
@@ -226,7 +279,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="list_job_runs",
-            description="List runs for a job with parameters: job_id (required), active_only (optional), completed_only (optional), offset (optional), limit (optional)",
+            description=generate_tool_description(
+                jobs.list_runs,
+                API_ENDPOINTS["list_runs"]["method"],
+                API_ENDPOINTS["list_runs"]["endpoint"]
+            ),
         )
         async def list_job_runs(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Listing job runs with params: {params}")
@@ -244,7 +301,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="cancel_job_run",
-            description="Cancel a job run with parameter: run_id (required)",
+            description=generate_tool_description(
+                jobs.cancel_run,
+                API_ENDPOINTS["cancel_run"]["method"],
+                API_ENDPOINTS["cancel_run"]["endpoint"]
+            ),
         )
         async def cancel_job_run(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Canceling job run with params: {params}")
@@ -258,7 +319,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="delete_job_run",
-            description="Delete a job run with parameter: run_id (required)",
+            description=generate_tool_description(
+                jobs.delete_run,
+                API_ENDPOINTS["delete_run"]["method"],
+                API_ENDPOINTS["delete_run"]["endpoint"]
+            ),
         )
         async def delete_job_run(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Deleting job run with params: {params}")
@@ -272,7 +337,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="delete_job",
-            description="Delete a job with parameter: job_id (required)",
+            description=generate_tool_description(
+                jobs.delete_job,
+                API_ENDPOINTS["delete_job"]["method"],
+                API_ENDPOINTS["delete_job"]["endpoint"]
+            ),
         )
         async def delete_job(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Deleting job with params: {params}")
@@ -287,7 +356,11 @@ class DatabricksMCPServer(FastMCP):
         # Notebook management tools
         @self.tool(
             name="list_notebooks",
-            description="List notebooks in a workspace directory with parameter: path (required)",
+            description=generate_tool_description(
+                notebooks.list_notebooks,
+                API_ENDPOINTS["list_notebooks"]["method"],
+                API_ENDPOINTS["list_notebooks"]["endpoint"]
+            ),
         )
         async def list_notebooks(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Listing notebooks with params: {params}")
@@ -300,7 +373,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="export_notebook",
-            description="Export a notebook from the workspace with parameters: path (required), format (optional, one of: SOURCE, HTML, JUPYTER, DBC)",
+            description=generate_tool_description(
+                notebooks.export_notebook,
+                API_ENDPOINTS["export_notebook"]["method"],
+                API_ENDPOINTS["export_notebook"]["endpoint"]
+            ),
         )
         async def export_notebook(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Exporting notebook with params: {params}")
@@ -322,7 +399,11 @@ class DatabricksMCPServer(FastMCP):
         # DBFS tools
         @self.tool(
             name="list_files",
-            description="List files and directories in a DBFS path with parameter: dbfs_path (required)",
+            description=generate_tool_description(
+                dbfs.list_files,
+                API_ENDPOINTS["list_dbfs_files"]["method"],
+                API_ENDPOINTS["list_dbfs_files"]["endpoint"]
+            ),
         )
         async def list_files(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Listing files with params: {params}")
@@ -333,10 +414,110 @@ class DatabricksMCPServer(FastMCP):
                 logger.error(f"Error listing files: {str(e)}")
                 return [{"text": json.dumps({"error": str(e)})}]
         
+        @self.tool(
+            name="import_file",
+            description=generate_tool_description(
+                dbfs.import_file,
+                API_ENDPOINTS["import_file"]["method"],
+                API_ENDPOINTS["import_file"]["endpoint"]
+            ),
+        )
+        async def import_file(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Importing file with params: {params}")
+            try:
+                source_path = params.get("source_path")
+                target_path = params.get("target_path")
+                overwrite = params.get("overwrite", False)
+                result = await dbfs.import_file(source_path, target_path, overwrite)
+                return [{"text": json.dumps(result)}]
+            except Exception as e:
+                logger.error(f"Error importing file: {str(e)}")
+                return [{"text": json.dumps({"error": str(e)})}]
+        
+        @self.tool(
+            name="create_directory",
+            description=generate_tool_description(
+                dbfs.create_directory,
+                API_ENDPOINTS["create_dbfs_directory"]["method"],
+                API_ENDPOINTS["create_dbfs_directory"]["endpoint"]
+            ),
+        )
+        async def create_directory(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Creating directory with params: {params}")
+            try:
+                path = params.get("path")
+                result = await dbfs.create_directory(path)
+                return [{"text": json.dumps(result)}]
+            except Exception as e:
+                logger.error(f"Error creating directory: {str(e)}")
+                return [{"text": json.dumps({"error": str(e)})}]
+        
+        @self.tool(
+            name="delete_dbfs_file",
+            description=generate_tool_description(
+                dbfs.delete_file,
+                API_ENDPOINTS["delete_dbfs_file"]["method"],
+                API_ENDPOINTS["delete_dbfs_file"]["endpoint"]
+            ),
+        )
+        async def delete_dbfs_file(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Deleting DBFS file with params: {params}")
+            try:
+                path = params.get("path")
+                recursive = params.get("recursive", False)
+                result = await dbfs.delete_file(path, recursive)
+                return [{"text": json.dumps(result)}]
+            except Exception as e:
+                logger.error(f"Error deleting DBFS file: {str(e)}")
+                return [{"text": json.dumps({"error": str(e)})}]
+        
+        @self.tool(
+            name="read_dbfs_file",
+            description=generate_tool_description(
+                dbfs.read_file,
+                API_ENDPOINTS["read_dbfs_file"]["method"],
+                API_ENDPOINTS["read_dbfs_file"]["endpoint"]
+            ),
+        )
+        async def read_dbfs_file(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Reading DBFS file with params: {params}")
+            try:
+                path = params.get("path")
+                offset = params.get("offset", 0)
+                length = params.get("length", 1024 * 1024)  # Default to 1MB
+                result = await dbfs.read_file(path, offset, length)
+                return [{"text": json.dumps(result)}]
+            except Exception as e:
+                logger.error(f"Error reading DBFS file: {str(e)}")
+                return [{"text": json.dumps({"error": str(e)})}]
+        
+        @self.tool(
+            name="move_dbfs_file",
+            description=generate_tool_description(
+                dbfs.move_file,
+                API_ENDPOINTS["move_file"]["method"],
+                API_ENDPOINTS["move_file"]["endpoint"]
+            ),
+        )
+        async def move_dbfs_file(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Moving DBFS file with params: {params}")
+            try:
+                source_path = params.get("source_path")
+                target_path = params.get("target_path")
+                result = await dbfs.move_file(source_path, target_path)
+                return [{"text": json.dumps(result)}]
+            except Exception as e:
+                logger.error(f"Error moving DBFS file: {str(e)}")
+                return [{"text": json.dumps({"error": str(e)})}]
+        
         # Workspace tools
         @self.tool(
             name="list_workspace_files",
-            description="List files and directories in a workspace path with parameter: path (required)",
+            description=generate_tool_description(
+                workspace.list_files, 
+                API_ENDPOINTS["list_files"]["method"],
+                API_ENDPOINTS["list_files"]["endpoint"]
+            ),
         )
         async def list_workspace_files(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Listing workspace files with params: {params}")
@@ -349,7 +530,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="import_workspace_file",
-            description="Import a file to the workspace with parameters: path (required), format (required), content (required), language (optional), overwrite (optional)",
+            description=generate_tool_description(
+                workspace.import_files, 
+                API_ENDPOINTS["import_files"]["method"],
+                API_ENDPOINTS["import_files"]["endpoint"]
+            ),
         )
         async def import_workspace_file(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Importing workspace file with params: {params}")
@@ -367,7 +552,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="export_workspace_file",
-            description="Export a file from the workspace with parameters: path (required), format (required)",
+            description=generate_tool_description(
+                workspace.export_files,
+                API_ENDPOINTS["export_files"]["method"],
+                API_ENDPOINTS["export_files"]["endpoint"]
+            ),
         )
         async def export_workspace_file(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Exporting workspace file with params: {params}")
@@ -382,7 +571,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="delete_workspace_file",
-            description="Delete a file or directory from the workspace with parameters: path (required), recursive (optional)",
+            description=generate_tool_description(
+                workspace.delete_files,
+                API_ENDPOINTS["delete_files"]["method"],
+                API_ENDPOINTS["delete_files"]["endpoint"]
+            ),
         )
         async def delete_workspace_file(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Deleting workspace file with params: {params}")
@@ -397,7 +590,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="get_workspace_status",
-            description="Get the status of a file or directory in the workspace with parameter: path (required)",
+            description=generate_tool_description(
+                workspace.get_file_status,
+                API_ENDPOINTS["get_file_status"]["method"],
+                API_ENDPOINTS["get_file_status"]["endpoint"]
+            ),
         )
         async def get_workspace_status(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Getting workspace status with params: {params}")
@@ -411,7 +608,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="create_workspace_directory",
-            description="Create directories in the workspace with parameter: path (required)",
+            description=generate_tool_description(
+                workspace.mkdirs,
+                API_ENDPOINTS["mkdirs"]["method"],
+                API_ENDPOINTS["mkdirs"]["endpoint"]
+            ),
         )
         async def create_workspace_directory(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Creating workspace directory with params: {params}")
@@ -426,7 +627,11 @@ class DatabricksMCPServer(FastMCP):
         # SQL tools
         @self.tool(
             name="execute_sql",
-            description="Execute a SQL statement with parameters: statement (required), warehouse_id (required), catalog (optional), schema (optional)",
+            description=generate_tool_description(
+                sql.execute_sql,
+                API_ENDPOINTS["execute_sql"]["method"],
+                API_ENDPOINTS["execute_sql"]["endpoint"]
+            ),
         )
         async def execute_sql(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Executing SQL with params: {params}")
@@ -447,7 +652,11 @@ class DatabricksMCPServer(FastMCP):
         # Catalog operations
         @self.tool(
             name="list_catalogs",
-            description="List catalogs in the Unity Catalog with optional parameter: max_results",
+            description=generate_tool_description(
+                unity_catalog.list_catalogs,
+                API_ENDPOINTS["list_catalogs"]["method"],
+                API_ENDPOINTS["list_catalogs"]["endpoint"]
+            ),
         )
         async def list_catalogs(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Listing catalogs with params: {params}")
@@ -461,7 +670,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="create_catalog",
-            description="Create a new catalog in the Unity Catalog with parameters: name (required), comment (optional)",
+            description=generate_tool_description(
+                unity_catalog.create_catalog,
+                API_ENDPOINTS["create_catalog"]["method"],
+                API_ENDPOINTS["create_catalog"]["endpoint"]
+            ),
         )
         async def create_catalog(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Creating catalog with params: {params}")
@@ -476,7 +689,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="get_catalog",
-            description="Get details of a catalog in the Unity Catalog with parameter: name (required)",
+            description=generate_tool_description(
+                unity_catalog.get_catalog,
+                API_ENDPOINTS["get_catalog"]["method"],
+                API_ENDPOINTS["get_catalog"]["endpoint"]
+            ),
         )
         async def get_catalog(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Getting catalog with params: {params}")
@@ -490,7 +707,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="update_catalog",
-            description="Update a catalog in the Unity Catalog with parameters: name (required), new_name (optional), comment (optional)",
+            description=generate_tool_description(
+                unity_catalog.update_catalog,
+                API_ENDPOINTS["update_catalog"]["method"],
+                API_ENDPOINTS["update_catalog"]["endpoint"]
+            ),
         )
         async def update_catalog(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Updating catalog with params: {params}")
@@ -506,7 +727,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="delete_catalog",
-            description="Delete a catalog from the Unity Catalog with parameter: name (required)",
+            description=generate_tool_description(
+                unity_catalog.delete_catalog,
+                API_ENDPOINTS["delete_catalog"]["method"],
+                API_ENDPOINTS["delete_catalog"]["endpoint"]
+            ),
         )
         async def delete_catalog(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Deleting catalog with params: {params}")
@@ -521,7 +746,11 @@ class DatabricksMCPServer(FastMCP):
         # Schema operations
         @self.tool(
             name="list_schemas",
-            description="List schemas in the Unity Catalog with parameters: catalog_name (optional), max_results (optional)",
+            description=generate_tool_description(
+                unity_catalog.list_schemas,
+                API_ENDPOINTS["list_schemas"]["method"],
+                API_ENDPOINTS["list_schemas"]["endpoint"]
+            ),
         )
         async def list_schemas(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Listing schemas with params: {params}")
@@ -536,7 +765,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="create_schema",
-            description="Create a new schema in the Unity Catalog with parameters: name (required), catalog_name (required), comment (optional)",
+            description=generate_tool_description(
+                unity_catalog.create_schema,
+                API_ENDPOINTS["create_schema"]["method"],
+                API_ENDPOINTS["create_schema"]["endpoint"]
+            ),
         )
         async def create_schema(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Creating schema with params: {params}")
@@ -552,7 +785,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="get_schema",
-            description="Get details of a schema in the Unity Catalog with parameter: full_name (required, format: catalog.schema)",
+            description=generate_tool_description(
+                unity_catalog.get_schema,
+                API_ENDPOINTS["get_schema"]["method"],
+                API_ENDPOINTS["get_schema"]["endpoint"]
+            ),
         )
         async def get_schema(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Getting schema with params: {params}")
@@ -566,7 +803,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="update_schema",
-            description="Update a schema in the Unity Catalog with parameters: full_name (required), new_name (optional), comment (optional)",
+            description=generate_tool_description(
+                unity_catalog.update_schema,
+                API_ENDPOINTS["update_schema"]["method"],
+                API_ENDPOINTS["update_schema"]["endpoint"]
+            ),
         )
         async def update_schema(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Updating schema with params: {params}")
@@ -582,7 +823,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="delete_schema",
-            description="Delete a schema from the Unity Catalog with parameter: full_name (required, format: catalog.schema)",
+            description=generate_tool_description(
+                unity_catalog.delete_schema,
+                API_ENDPOINTS["delete_schema"]["method"],
+                API_ENDPOINTS["delete_schema"]["endpoint"]
+            ),
         )
         async def delete_schema(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Deleting schema with params: {params}")
@@ -597,7 +842,11 @@ class DatabricksMCPServer(FastMCP):
         # Table operations
         @self.tool(
             name="list_tables",
-            description="List tables in the Unity Catalog with parameters: catalog_name (optional), schema_name (optional), max_results (optional), page_token (optional)",
+            description=generate_tool_description(
+                unity_catalog.list_tables,
+                API_ENDPOINTS["list_tables"]["method"],
+                API_ENDPOINTS["list_tables"]["endpoint"]
+            ),
         )
         async def list_tables(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Listing tables with params: {params}")
@@ -614,7 +863,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="get_table",
-            description="Get details of a table in the Unity Catalog with parameter: full_name (required, format: catalog.schema.table)",
+            description=generate_tool_description(
+                unity_catalog.get_table,
+                API_ENDPOINTS["get_table"]["method"],
+                API_ENDPOINTS["get_table"]["endpoint"]
+            ),
         )
         async def get_table(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Getting table with params: {params}")
@@ -629,7 +882,11 @@ class DatabricksMCPServer(FastMCP):
         # SQL Queries tools
         @self.tool(
             name="create_sql_query",
-            description="Create a new SQL query with parameters: name (required), description (optional), query (optional), parent (optional), run_as_role (optional)",
+            description=generate_tool_description(
+                sql_queries.create_query,
+                API_ENDPOINTS["create_query"]["method"],
+                API_ENDPOINTS["create_query"]["endpoint"]
+            ),
         )
         async def create_sql_query(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Creating SQL query with params: {params}")
@@ -647,7 +904,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="list_sql_queries",
-            description="List SQL queries with parameters: page_size (optional), page (optional), order (optional), q (optional)",
+            description=generate_tool_description(
+                sql_queries.list_queries,
+                API_ENDPOINTS["list_queries"]["method"],
+                API_ENDPOINTS["list_queries"]["endpoint"]
+            ),
         )
         async def list_sql_queries(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Listing SQL queries with params: {params}")
@@ -664,7 +925,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="get_sql_query",
-            description="Get a specific SQL query by ID with parameter: query_id (required)",
+            description=generate_tool_description(
+                sql_queries.get_query,
+                API_ENDPOINTS["get_query"]["method"],
+                API_ENDPOINTS["get_query"]["endpoint"]
+            ),
         )
         async def get_sql_query(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Getting SQL query with params: {params}")
@@ -678,7 +943,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="update_sql_query",
-            description="Update an existing SQL query with parameters: query_id (required), name (optional), description (optional), query (optional), run_as_role (optional)",
+            description=generate_tool_description(
+                sql_queries.update_query,
+                API_ENDPOINTS["update_query"]["method"],
+                API_ENDPOINTS["update_query"]["endpoint"]
+            ),
         )
         async def update_sql_query(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Updating SQL query with params: {params}")
@@ -696,7 +965,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="delete_sql_query",
-            description="Delete a SQL query with parameter: query_id (required)",
+            description=generate_tool_description(
+                sql_queries.delete_query,
+                API_ENDPOINTS["delete_query"]["method"],
+                API_ENDPOINTS["delete_query"]["endpoint"]
+            ),
         )
         async def delete_sql_query(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Deleting SQL query with params: {params}")
@@ -710,7 +983,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="run_sql_query",
-            description="Run a SQL query and return results with parameters: query_id (required), parameters (optional), warehouse_id (optional)",
+            description=generate_tool_description(
+                sql_queries.run_query,
+                API_ENDPOINTS["run_query"]["method"],
+                API_ENDPOINTS["run_query"]["endpoint"]
+            ),
         )
         async def run_sql_query(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Running SQL query with params: {params}")
@@ -727,7 +1004,11 @@ class DatabricksMCPServer(FastMCP):
         # SQL Dashboard tools
         @self.tool(
             name="create_dashboard",
-            description="Create a new SQL dashboard with parameters: name (required), description (optional), tags (optional)",
+            description=generate_tool_description(
+                sql_queries.create_dashboard,
+                API_ENDPOINTS["create_dashboard"]["method"],
+                API_ENDPOINTS["create_dashboard"]["endpoint"]
+            ),
         )
         async def create_dashboard(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Creating dashboard with params: {params}")
@@ -743,7 +1024,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="list_dashboards",
-            description="List SQL dashboards with parameters: page_size (optional), page (optional), order (optional), q (optional)",
+            description=generate_tool_description(
+                sql_queries.list_dashboards,
+                API_ENDPOINTS["list_dashboards"]["method"],
+                API_ENDPOINTS["list_dashboards"]["endpoint"]
+            ),
         )
         async def list_dashboards(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Listing dashboards with params: {params}")
@@ -760,7 +1045,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="get_dashboard",
-            description="Get a specific dashboard by ID with parameter: dashboard_id (required)",
+            description=generate_tool_description(
+                sql_queries.get_dashboard,
+                API_ENDPOINTS["get_dashboard"]["method"],
+                API_ENDPOINTS["get_dashboard"]["endpoint"]
+            ),
         )
         async def get_dashboard(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Getting dashboard with params: {params}")
@@ -774,7 +1063,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="update_dashboard",
-            description="Update an existing dashboard with parameters: dashboard_id (required), name (optional), description (optional), tags (optional)",
+            description=generate_tool_description(
+                sql_queries.update_dashboard,
+                API_ENDPOINTS["update_dashboard"]["method"],
+                API_ENDPOINTS["update_dashboard"]["endpoint"]
+            ),
         )
         async def update_dashboard(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Updating dashboard with params: {params}")
@@ -791,7 +1084,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="delete_dashboard",
-            description="Delete a dashboard with parameter: dashboard_id (required)",
+            description=generate_tool_description(
+                sql_queries.delete_dashboard,
+                API_ENDPOINTS["delete_dashboard"]["method"],
+                API_ENDPOINTS["delete_dashboard"]["endpoint"]
+            ),
         )
         async def delete_dashboard(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Deleting dashboard with params: {params}")
@@ -806,7 +1103,11 @@ class DatabricksMCPServer(FastMCP):
         # Alert tools
         @self.tool(
             name="create_alert",
-            description="Create a new alert for a SQL query with parameters: query_id (required), name (required), options (required)",
+            description=generate_tool_description(
+                sql_queries.create_alert,
+                API_ENDPOINTS["create_alert"]["method"],
+                API_ENDPOINTS["create_alert"]["endpoint"]
+            ),
         )
         async def create_alert(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Creating alert with params: {params}")
@@ -822,7 +1123,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="list_alerts",
-            description="List SQL alerts with parameters: page_size (optional), page (optional)",
+            description=generate_tool_description(
+                sql_queries.list_alerts,
+                API_ENDPOINTS["list_alerts"]["method"],
+                API_ENDPOINTS["list_alerts"]["endpoint"]
+            ),
         )
         async def list_alerts(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Listing alerts with params: {params}")
@@ -837,7 +1142,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="get_alert",
-            description="Get a specific alert by ID with parameter: alert_id (required)",
+            description=generate_tool_description(
+                sql_queries.get_alert,
+                API_ENDPOINTS["get_alert"]["method"],
+                API_ENDPOINTS["get_alert"]["endpoint"]
+            ),
         )
         async def get_alert(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Getting alert with params: {params}")
@@ -851,7 +1160,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="update_alert",
-            description="Update an existing alert with parameters: alert_id (required), name (optional), options (optional)",
+            description=generate_tool_description(
+                sql_queries.update_alert,
+                API_ENDPOINTS["update_alert"]["method"],
+                API_ENDPOINTS["update_alert"]["endpoint"]
+            ),
         )
         async def update_alert(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Updating alert with params: {params}")
@@ -867,7 +1180,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="delete_alert",
-            description="Delete an alert with parameter: alert_id (required)",
+            description=generate_tool_description(
+                sql_queries.delete_alert,
+                API_ENDPOINTS["delete_alert"]["method"],
+                API_ENDPOINTS["delete_alert"]["endpoint"]
+            ),
         )
         async def delete_alert(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Deleting alert with params: {params}")
@@ -882,7 +1199,11 @@ class DatabricksMCPServer(FastMCP):
         # Visualization tools
         @self.tool(
             name="create_visualization",
-            description="Create a new visualization for a SQL query with parameters: query_id (required), visualization_type (required), name (required), options (required), description (optional)",
+            description=generate_tool_description(
+                sql_queries.create_visualization,
+                API_ENDPOINTS["create_visualization"]["method"],
+                API_ENDPOINTS["create_visualization"]["endpoint"]
+            ),
         )
         async def create_visualization(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Creating visualization with params: {params}")
@@ -900,7 +1221,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="update_visualization",
-            description="Update an existing visualization with parameters: visualization_id (required), visualization_type (optional), name (optional), options (optional), description (optional)",
+            description=generate_tool_description(
+                sql_queries.update_visualization,
+                API_ENDPOINTS["update_visualization"]["method"],
+                API_ENDPOINTS["update_visualization"]["endpoint"]
+            ),
         )
         async def update_visualization(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Updating visualization with params: {params}")
@@ -918,7 +1243,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="delete_visualization",
-            description="Delete a visualization with parameter: visualization_id (required)",
+            description=generate_tool_description(
+                sql_queries.delete_visualization,
+                API_ENDPOINTS["delete_visualization"]["method"],
+                API_ENDPOINTS["delete_visualization"]["endpoint"]
+            ),
         )
         async def delete_visualization(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Deleting visualization with params: {params}")
@@ -933,7 +1262,11 @@ class DatabricksMCPServer(FastMCP):
         # Command execution tools
         @self.tool(
             name="create_command_context",
-            description="Create a command execution context with parameters: cluster_id (required), language (optional)",
+            description=generate_tool_description(
+                commands.create_context,
+                API_ENDPOINTS["create_command_context"]["method"],
+                API_ENDPOINTS["create_command_context"]["endpoint"]
+            ),
         )
         async def create_command_context(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Creating command context with params: {params}")
@@ -948,7 +1281,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="execute_command",
-            description="Execute a command in a context with parameters: context_id (required), command (required), cluster_id (required)",
+            description=generate_tool_description(
+                commands.execute_command,
+                API_ENDPOINTS["execute_command"]["method"],
+                API_ENDPOINTS["execute_command"]["endpoint"]
+            ),
         )
         async def execute_command(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Executing command with params: {params}")
@@ -964,7 +1301,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="get_command_status",
-            description="Get status of a command with parameters: command_id (required), context_id (required), cluster_id (required)",
+            description=generate_tool_description(
+                commands.get_command_status,
+                API_ENDPOINTS["get_command_status"]["method"],
+                API_ENDPOINTS["get_command_status"]["endpoint"]
+            ),
         )
         async def get_command_status(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Getting command status with params: {params}")
@@ -980,7 +1321,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="cancel_command",
-            description="Cancel a command with parameters: command_id (required), context_id (required), cluster_id (required)",
+            description=generate_tool_description(
+                commands.cancel_command,
+                API_ENDPOINTS["cancel_command"]["method"],
+                API_ENDPOINTS["cancel_command"]["endpoint"]
+            ),
         )
         async def cancel_command(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Canceling command with params: {params}")
@@ -997,14 +1342,18 @@ class DatabricksMCPServer(FastMCP):
         # Library management tools
         @self.tool(
             name="install_libraries",
-            description="Install libraries on a cluster with parameters: cluster_id (required), libraries (required)",
+            description=generate_tool_description(
+                libraries.install_libraries,
+                API_ENDPOINTS["install_libraries"]["method"],
+                API_ENDPOINTS["install_libraries"]["endpoint"]
+            ),
         )
         async def install_libraries(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Installing libraries with params: {params}")
             try:
                 cluster_id = params.get("cluster_id")
-                libraries_list = params.get("libraries")
-                result = await libraries.install_libraries(cluster_id, libraries_list)
+                libraries_config = params.get("libraries")
+                result = await libraries.install_libraries(cluster_id, libraries_config)
                 return [{"text": json.dumps(result)}]
             except Exception as e:
                 logger.error(f"Error installing libraries: {str(e)}")
@@ -1012,14 +1361,18 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="uninstall_libraries",
-            description="Uninstall libraries from a cluster with parameters: cluster_id (required), libraries (required)",
+            description=generate_tool_description(
+                libraries.uninstall_libraries,
+                API_ENDPOINTS["uninstall_libraries"]["method"],
+                API_ENDPOINTS["uninstall_libraries"]["endpoint"]
+            ),
         )
         async def uninstall_libraries(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Uninstalling libraries with params: {params}")
             try:
                 cluster_id = params.get("cluster_id")
-                libraries_list = params.get("libraries")
-                result = await libraries.uninstall_libraries(cluster_id, libraries_list)
+                libraries_config = params.get("libraries")
+                result = await libraries.uninstall_libraries(cluster_id, libraries_config)
                 return [{"text": json.dumps(result)}]
             except Exception as e:
                 logger.error(f"Error uninstalling libraries: {str(e)}")
@@ -1027,7 +1380,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="list_libraries",
-            description="List libraries installed on a cluster with parameter: cluster_id (required)",
+            description=generate_tool_description(
+                libraries.list_libraries,
+                API_ENDPOINTS["list_libraries"]["method"],
+                API_ENDPOINTS["list_libraries"]["endpoint"]
+            ),
         )
         async def list_libraries(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Listing libraries with params: {params}")
@@ -1041,13 +1398,17 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="list_library_statuses",
-            description="Get status of libraries on a cluster with parameter: cluster_id (required)",
+            description=generate_tool_description(
+                libraries.get_library_statuses,
+                API_ENDPOINTS["list_library_statuses"]["method"],
+                API_ENDPOINTS["list_library_statuses"]["endpoint"]
+            ),
         )
         async def list_library_statuses(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Listing library statuses with params: {params}")
             try:
                 cluster_id = params.get("cluster_id")
-                result = await libraries.list_library_statuses(cluster_id)
+                result = await libraries.get_library_statuses(cluster_id)
                 return [{"text": json.dumps(result)}]
             except Exception as e:
                 logger.error(f"Error listing library statuses: {str(e)}")
@@ -1056,7 +1417,11 @@ class DatabricksMCPServer(FastMCP):
         # Storage Credentials operations
         @self.tool(
             name="create_storage_credential",
-            description="Create a storage credential in Unity Catalog with parameters: name (required), aws_iam_role (optional), azure_service_principal (optional), comment (optional)",
+            description=generate_tool_description(
+                unity_catalog.create_storage_credential,
+                API_ENDPOINTS["create_storage_credential"]["method"],
+                API_ENDPOINTS["create_storage_credential"]["endpoint"]
+            ),
         )
         async def create_storage_credential(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Creating storage credential with params: {params}")
@@ -1073,7 +1438,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="get_storage_credential",
-            description="Get details of a storage credential with parameter: name (required)",
+            description=generate_tool_description(
+                unity_catalog.get_storage_credential,
+                API_ENDPOINTS["get_storage_credential"]["method"],
+                API_ENDPOINTS["get_storage_credential"]["endpoint"]
+            ),
         )
         async def get_storage_credential(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Getting storage credential with params: {params}")
@@ -1087,7 +1456,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="update_storage_credential",
-            description="Update a storage credential with parameters: name (required), new_name (optional), aws_iam_role (optional), azure_service_principal (optional), comment (optional)",
+            description=generate_tool_description(
+                unity_catalog.update_storage_credential,
+                API_ENDPOINTS["update_storage_credential"]["method"],
+                API_ENDPOINTS["update_storage_credential"]["endpoint"]
+            ),
         )
         async def update_storage_credential(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Updating storage credential with params: {params}")
@@ -1105,7 +1478,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="delete_storage_credential",
-            description="Delete a storage credential with parameter: name (required)",
+            description=generate_tool_description(
+                unity_catalog.delete_storage_credential,
+                API_ENDPOINTS["delete_storage_credential"]["method"],
+                API_ENDPOINTS["delete_storage_credential"]["endpoint"]
+            ),
         )
         async def delete_storage_credential(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Deleting storage credential with params: {params}")
@@ -1119,7 +1496,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="list_storage_credentials",
-            description="List storage credentials in Unity Catalog",
+            description=generate_tool_description(
+                unity_catalog.list_storage_credentials,
+                API_ENDPOINTS["list_storage_credentials"]["method"],
+                API_ENDPOINTS["list_storage_credentials"]["endpoint"]
+            ),
         )
         async def list_storage_credentials(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Listing storage credentials with params: {params}")
@@ -1133,7 +1514,11 @@ class DatabricksMCPServer(FastMCP):
         # Volume operations
         @self.tool(
             name="create_volume",
-            description="Create a volume in Unity Catalog with parameters: name (required), catalog_name (required), schema_name (required), volume_type (optional), comment (optional)",
+            description=generate_tool_description(
+                unity_catalog.create_volume,
+                API_ENDPOINTS["create_volume"]["method"],
+                API_ENDPOINTS["create_volume"]["endpoint"]
+            ),
         )
         async def create_volume(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Creating volume with params: {params}")
@@ -1151,7 +1536,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="update_volume",
-            description="Update a volume with parameters: full_name (required), new_name (optional), owner (optional), comment (optional)",
+            description=generate_tool_description(
+                unity_catalog.update_volume,
+                API_ENDPOINTS["update_volume"]["method"],
+                API_ENDPOINTS["update_volume"]["endpoint"]
+            ),
         )
         async def update_volume(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Updating volume with params: {params}")
@@ -1168,7 +1557,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="delete_volume",
-            description="Delete a volume with parameter: full_name (required)",
+            description=generate_tool_description(
+                unity_catalog.delete_volume,
+                API_ENDPOINTS["delete_volume"]["method"],
+                API_ENDPOINTS["delete_volume"]["endpoint"]
+            ),
         )
         async def delete_volume(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Deleting volume with params: {params}")
@@ -1182,7 +1575,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="list_volumes",
-            description="List volumes in Unity Catalog with parameters: catalog_name (optional), schema_name (optional), max_results (optional), page_token (optional)",
+            description=generate_tool_description(
+                unity_catalog.list_volumes,
+                API_ENDPOINTS["list_volumes"]["method"],
+                API_ENDPOINTS["list_volumes"]["endpoint"]
+            ),
         )
         async def list_volumes(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Listing volumes with params: {params}")
@@ -1200,7 +1597,11 @@ class DatabricksMCPServer(FastMCP):
         # Connection operations
         @self.tool(
             name="create_connection",
-            description="Create a connection in Unity Catalog with parameters: name (required), connection_type (required), options (required), comment (optional)",
+            description=generate_tool_description(
+                unity_catalog.create_connection,
+                API_ENDPOINTS["create_connection"]["method"],
+                API_ENDPOINTS["create_connection"]["endpoint"]
+            ),
         )
         async def create_connection(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Creating connection with params: {params}")
@@ -1217,7 +1618,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="list_connections",
-            description="List connections in Unity Catalog with parameter: connection_type (optional)",
+            description=generate_tool_description(
+                unity_catalog.list_connections,
+                API_ENDPOINTS["list_connections"]["method"],
+                API_ENDPOINTS["list_connections"]["endpoint"]
+            ),
         )
         async def list_connections(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Listing connections with params: {params}")
@@ -1231,7 +1636,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="update_connection",
-            description="Update a connection with parameters: name (required), new_name (optional), options (optional), comment (optional)",
+            description=generate_tool_description(
+                unity_catalog.update_connection,
+                API_ENDPOINTS["update_connection"]["method"],
+                API_ENDPOINTS["update_connection"]["endpoint"]
+            ),
         )
         async def update_connection(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Updating connection with params: {params}")
@@ -1248,7 +1657,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="delete_connection",
-            description="Delete a connection with parameter: name (required)",
+            description=generate_tool_description(
+                unity_catalog.delete_connection,
+                API_ENDPOINTS["delete_connection"]["method"],
+                API_ENDPOINTS["delete_connection"]["endpoint"]
+            ),
         )
         async def delete_connection(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Deleting connection with params: {params}")
@@ -1263,7 +1676,11 @@ class DatabricksMCPServer(FastMCP):
         # Credential operations
         @self.tool(
             name="create_credential",
-            description="Create a credential in Unity Catalog with parameters: name (required), credential_type (required), credential_info (required), comment (optional)",
+            description=generate_tool_description(
+                unity_catalog.create_credential,
+                API_ENDPOINTS["create_credential"]["method"],
+                API_ENDPOINTS["create_credential"]["endpoint"]
+            ),
         )
         async def create_credential(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Creating credential with params: {params}")
@@ -1280,7 +1697,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="list_credentials",
-            description="List credentials in Unity Catalog with parameter: credential_type (optional)",
+            description=generate_tool_description(
+                unity_catalog.list_credentials,
+                API_ENDPOINTS["list_credentials"]["method"],
+                API_ENDPOINTS["list_credentials"]["endpoint"]
+            ),
         )
         async def list_credentials(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Listing credentials with params: {params}")
@@ -1294,7 +1715,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="update_credential",
-            description="Update a credential with parameters: name (required), new_name (optional), credential_info (optional), comment (optional)",
+            description=generate_tool_description(
+                unity_catalog.update_credential,
+                API_ENDPOINTS["update_credential"]["method"],
+                API_ENDPOINTS["update_credential"]["endpoint"]
+            ),
         )
         async def update_credential(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Updating credential with params: {params}")
@@ -1311,7 +1736,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="delete_credential",
-            description="Delete a credential with parameter: name (required)",
+            description=generate_tool_description(
+                unity_catalog.delete_credential,
+                API_ENDPOINTS["delete_credential"]["method"],
+                API_ENDPOINTS["delete_credential"]["endpoint"]
+            ),
         )
         async def delete_credential(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Deleting credential with params: {params}")
@@ -1326,7 +1755,11 @@ class DatabricksMCPServer(FastMCP):
         # Delta Live Tables (Pipelines) tools
         @self.tool(
             name="create_pipeline",
-            description="Create a Delta Live Table pipeline with parameters: name (required), target (required), configuration (optional), libraries (optional), continuous (optional)",
+            description=generate_tool_description(
+                pipelines.create_pipeline,
+                API_ENDPOINTS["create_pipeline"]["method"],
+                API_ENDPOINTS["create_pipeline"]["endpoint"]
+            ),
         )
         async def create_pipeline(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Creating pipeline with params: {params}")
@@ -1344,7 +1777,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="list_pipelines",
-            description="List Delta Live Table pipelines with parameters: max_results (optional), page_token (optional)",
+            description=generate_tool_description(
+                pipelines.list_pipelines,
+                API_ENDPOINTS["list_pipelines"]["method"],
+                API_ENDPOINTS["list_pipelines"]["endpoint"]
+            ),
         )
         async def list_pipelines(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Listing pipelines with params: {params}")
@@ -1359,7 +1796,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="get_pipeline",
-            description="Get details of a Delta Live Table pipeline with parameter: pipeline_id (required)",
+            description=generate_tool_description(
+                pipelines.get_pipeline,
+                API_ENDPOINTS["get_pipeline"]["method"],
+                API_ENDPOINTS["get_pipeline"]["endpoint"]
+            ),
         )
         async def get_pipeline(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Getting pipeline with params: {params}")
@@ -1373,7 +1814,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="update_pipeline",
-            description="Update a Delta Live Table pipeline with parameters: pipeline_id (required), name (optional), target (optional), configuration (optional), libraries (optional), continuous (optional)",
+            description=generate_tool_description(
+                pipelines.update_pipeline,
+                API_ENDPOINTS["update_pipeline"]["method"],
+                API_ENDPOINTS["update_pipeline"]["endpoint"]
+            ),
         )
         async def update_pipeline(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Updating pipeline with params: {params}")
@@ -1392,7 +1837,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="delete_pipeline",
-            description="Delete a Delta Live Table pipeline with parameter: pipeline_id (required)",
+            description=generate_tool_description(
+                pipelines.delete_pipeline,
+                API_ENDPOINTS["delete_pipeline"]["method"],
+                API_ENDPOINTS["delete_pipeline"]["endpoint"]
+            ),
         )
         async def delete_pipeline(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Deleting pipeline with params: {params}")
@@ -1406,14 +1855,18 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="start_pipeline_update",
-            description="Start an update for a Delta Live Table pipeline with parameters: pipeline_id (required), full_refresh (optional)",
+            description=generate_tool_description(
+                pipelines.start_pipeline_update,
+                API_ENDPOINTS["start_pipeline_update"]["method"],
+                API_ENDPOINTS["start_pipeline_update"]["endpoint"]
+            ),
         )
         async def start_pipeline_update(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Starting pipeline update with params: {params}")
             try:
                 pipeline_id = params.get("pipeline_id")
                 full_refresh = params.get("full_refresh", False)
-                result = await pipelines.start_update(pipeline_id, full_refresh)
+                result = await pipelines.start_pipeline_update(pipeline_id, full_refresh)
                 return [{"text": json.dumps(result)}]
             except Exception as e:
                 logger.error(f"Error starting pipeline update: {str(e)}")
@@ -1421,14 +1874,18 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="get_pipeline_update",
-            description="Get details of a Delta Live Table pipeline update with parameters: pipeline_id (required), update_id (required)",
+            description=generate_tool_description(
+                pipelines.get_pipeline_update,
+                API_ENDPOINTS["get_pipeline_update"]["method"],
+                API_ENDPOINTS["get_pipeline_update"]["endpoint"]
+            ),
         )
         async def get_pipeline_update(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Getting pipeline update with params: {params}")
             try:
                 pipeline_id = params.get("pipeline_id")
                 update_id = params.get("update_id")
-                result = await pipelines.get_update(pipeline_id, update_id)
+                result = await pipelines.get_pipeline_update(pipeline_id, update_id)
                 return [{"text": json.dumps(result)}]
             except Exception as e:
                 logger.error(f"Error getting pipeline update: {str(e)}")
@@ -1436,7 +1893,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="list_pipeline_updates",
-            description="List updates for a Delta Live Table pipeline with parameters: pipeline_id (required), max_results (optional), page_token (optional)",
+            description=generate_tool_description(
+                pipelines.list_pipeline_updates,
+                API_ENDPOINTS["list_pipeline_updates"]["method"],
+                API_ENDPOINTS["list_pipeline_updates"]["endpoint"]
+            ),
         )
         async def list_pipeline_updates(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Listing pipeline updates with params: {params}")
@@ -1444,93 +1905,20 @@ class DatabricksMCPServer(FastMCP):
                 pipeline_id = params.get("pipeline_id")
                 max_results = params.get("max_results")
                 page_token = params.get("page_token")
-                result = await pipelines.list_updates(pipeline_id, max_results, page_token)
+                result = await pipelines.list_pipeline_updates(pipeline_id, max_results, page_token)
                 return [{"text": json.dumps(result)}]
             except Exception as e:
                 logger.error(f"Error listing pipeline updates: {str(e)}")
                 return [{"text": json.dumps({"error": str(e)})}]
         
-        # DBFS tools (additional)
-        @self.tool(
-            name="import_file",
-            description="Import a file to DBFS with parameters: source_path (required), target_path (required), overwrite (optional)",
-        )
-        async def import_file(params: Dict[str, Any]) -> List[TextContent]:
-            logger.info(f"Importing file with params: {params}")
-            try:
-                source_path = params.get("source_path")
-                target_path = params.get("target_path")
-                overwrite = params.get("overwrite", False)
-                result = await dbfs.import_file(source_path, target_path, overwrite)
-                return [{"text": json.dumps(result)}]
-            except Exception as e:
-                logger.error(f"Error importing file: {str(e)}")
-                return [{"text": json.dumps({"error": str(e)})}]
-        
-        @self.tool(
-            name="create_directory",
-            description="Create a directory in DBFS with parameter: path (required)",
-        )
-        async def create_directory(params: Dict[str, Any]) -> List[TextContent]:
-            logger.info(f"Creating directory with params: {params}")
-            try:
-                path = params.get("path")
-                result = await dbfs.create_directory(path)
-                return [{"text": json.dumps(result)}]
-            except Exception as e:
-                logger.error(f"Error creating directory: {str(e)}")
-                return [{"text": json.dumps({"error": str(e)})}]
-        
-        @self.tool(
-            name="delete_dbfs_file",
-            description="Delete a file or directory from DBFS with parameters: path (required), recursive (optional)",
-        )
-        async def delete_dbfs_file(params: Dict[str, Any]) -> List[TextContent]:
-            logger.info(f"Deleting DBFS file with params: {params}")
-            try:
-                path = params.get("path")
-                recursive = params.get("recursive", False)
-                result = await dbfs.delete_file(path, recursive)
-                return [{"text": json.dumps(result)}]
-            except Exception as e:
-                logger.error(f"Error deleting DBFS file: {str(e)}")
-                return [{"text": json.dumps({"error": str(e)})}]
-        
-        @self.tool(
-            name="read_dbfs_file",
-            description="Read a file from DBFS with parameters: path (required), offset (optional), length (optional)",
-        )
-        async def read_dbfs_file(params: Dict[str, Any]) -> List[TextContent]:
-            logger.info(f"Reading DBFS file with params: {params}")
-            try:
-                path = params.get("path")
-                offset = params.get("offset", 0)
-                length = params.get("length", 1024 * 1024)  # Default to 1MB
-                result = await dbfs.read_file(path, offset, length)
-                return [{"text": json.dumps(result)}]
-            except Exception as e:
-                logger.error(f"Error reading DBFS file: {str(e)}")
-                return [{"text": json.dumps({"error": str(e)})}]
-        
-        @self.tool(
-            name="move_dbfs_file",
-            description="Move a file in DBFS with parameters: source_path (required), target_path (required)",
-        )
-        async def move_dbfs_file(params: Dict[str, Any]) -> List[TextContent]:
-            logger.info(f"Moving DBFS file with params: {params}")
-            try:
-                source_path = params.get("source_path")
-                target_path = params.get("target_path")
-                result = await dbfs.move_file(source_path, target_path)
-                return [{"text": json.dumps(result)}]
-            except Exception as e:
-                logger.error(f"Error moving DBFS file: {str(e)}")
-                return [{"text": json.dumps({"error": str(e)})}]
-        
         # Service Principal tools
         @self.tool(
             name="create_service_principal",
-            description="Create a service principal with parameters: display_name (required), application_id (required), allow_cluster_create (optional)",
+            description=generate_tool_description(
+                service_principals.create_service_principal,
+                API_ENDPOINTS["create_service_principal"]["method"],
+                API_ENDPOINTS["create_service_principal"]["endpoint"]
+            ),
         )
         async def create_service_principal(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Creating service principal with params: {params}")
@@ -1546,7 +1934,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="list_service_principals",
-            description="List service principals with parameters: page_size (optional), page_token (optional)",
+            description=generate_tool_description(
+                service_principals.list_service_principals,
+                API_ENDPOINTS["list_service_principals"]["method"],
+                API_ENDPOINTS["list_service_principals"]["endpoint"]
+            ),
         )
         async def list_service_principals(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Listing service principals with params: {params}")
@@ -1561,7 +1953,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="get_service_principal",
-            description="Get details of a service principal with parameter: id (required)",
+            description=generate_tool_description(
+                service_principals.get_service_principal,
+                API_ENDPOINTS["get_service_principal"]["method"],
+                API_ENDPOINTS["get_service_principal"]["endpoint"]
+            ),
         )
         async def get_service_principal(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Getting service principal with params: {params}")
@@ -1575,7 +1971,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="update_service_principal",
-            description="Update a service principal with parameters: id (required), display_name (optional), allow_cluster_create (optional)",
+            description=generate_tool_description(
+                service_principals.update_service_principal,
+                API_ENDPOINTS["update_service_principal"]["method"],
+                API_ENDPOINTS["update_service_principal"]["endpoint"]
+            ),
         )
         async def update_service_principal(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Updating service principal with params: {params}")
@@ -1591,7 +1991,11 @@ class DatabricksMCPServer(FastMCP):
         
         @self.tool(
             name="delete_service_principal",
-            description="Delete a service principal with parameter: id (required)",
+            description=generate_tool_description(
+                service_principals.delete_service_principal,
+                API_ENDPOINTS["delete_service_principal"]["method"],
+                API_ENDPOINTS["delete_service_principal"]["endpoint"]
+            ),
         )
         async def delete_service_principal(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Deleting service principal with params: {params}")
@@ -1606,281 +2010,171 @@ class DatabricksMCPServer(FastMCP):
         # LakeView (AI/BI) tools
         @self.tool(
             name="list_lakeviews",
-            description="List LakeViews with parameters: max_results (optional), page_token (optional)",
+            description=generate_tool_description(
+                lakeview.list_lakeviews,
+                API_ENDPOINTS["list_lakeviews"]["method"],
+                API_ENDPOINTS["list_lakeviews"]["endpoint"]
+            ),
         )
         async def list_lakeviews(params: Dict[str, Any]) -> List[TextContent]:
-            logger.info(f"Listing LakeViews with params: {params}")
+            logger.info(f"Listing Lakeviews")
             try:
-                max_results = params.get("max_results")
-                page_token = params.get("page_token")
-                result = await lakeview.list_lakeviews(max_results, page_token)
+                result = await lakeview.list_lakeviews()
                 return [{"text": json.dumps(result)}]
             except Exception as e:
-                logger.error(f"Error listing LakeViews: {str(e)}")
+                logger.error(f"Error listing Lakeviews: {str(e)}")
                 return [{"text": json.dumps({"error": str(e)})}]
-        
+
         @self.tool(
             name="create_lakeview",
-            description="Create a LakeView with parameters: name (required), catalog_name (required), schema_name (required), table_name (required), description (optional)",
+            description=generate_tool_description(
+                lakeview.create_lakeview,
+                API_ENDPOINTS["create_lakeview"]["method"],
+                API_ENDPOINTS["create_lakeview"]["endpoint"]
+            ),
         )
         async def create_lakeview(params: Dict[str, Any]) -> List[TextContent]:
-            logger.info(f"Creating LakeView with params: {params}")
+            logger.info(f"Creating Lakeview with params: {params}")
             try:
                 name = params.get("name")
-                catalog_name = params.get("catalog_name")
-                schema_name = params.get("schema_name")
-                table_name = params.get("table_name")
+                definition = params.get("definition")
                 description = params.get("description")
-                result = await lakeview.create_lakeview(name, catalog_name, schema_name, table_name, description)
+                
+                if not name or not definition:
+                    return [{"text": json.dumps({"error": "name and definition are required parameters"})}]
+                
+                result = await lakeview.create_lakeview(name, definition, description)
                 return [{"text": json.dumps(result)}]
             except Exception as e:
-                logger.error(f"Error creating LakeView: {str(e)}")
+                logger.error(f"Error creating Lakeview: {str(e)}")
                 return [{"text": json.dumps({"error": str(e)})}]
         
         @self.tool(
             name="get_lakeview",
-            description="Get details of a LakeView with parameter: lakeview_id (required)",
+            description=generate_tool_description(
+                lakeview.get_lakeview,
+                API_ENDPOINTS["get_lakeview"]["method"],
+                API_ENDPOINTS["get_lakeview"]["endpoint"]
+            ),
         )
         async def get_lakeview(params: Dict[str, Any]) -> List[TextContent]:
-            logger.info(f"Getting LakeView with params: {params}")
+            logger.info(f"Getting Lakeview with params: {params}")
             try:
-                lakeview_id = params.get("lakeview_id")
+                lakeview_id = params.get("id")
+                
+                if not lakeview_id:
+                    return [{"text": json.dumps({"error": "id is a required parameter"})}]
+                
                 result = await lakeview.get_lakeview(lakeview_id)
                 return [{"text": json.dumps(result)}]
             except Exception as e:
-                logger.error(f"Error getting LakeView: {str(e)}")
+                logger.error(f"Error getting Lakeview: {str(e)}")
                 return [{"text": json.dumps({"error": str(e)})}]
         
         @self.tool(
             name="update_lakeview",
-            description="Update a LakeView with parameters: lakeview_id (required), name (optional), description (optional)",
+            description=generate_tool_description(
+                lakeview.update_lakeview,
+                API_ENDPOINTS["update_lakeview"]["method"],
+                API_ENDPOINTS["update_lakeview"]["endpoint"]
+            ),
         )
         async def update_lakeview(params: Dict[str, Any]) -> List[TextContent]:
-            logger.info(f"Updating LakeView with params: {params}")
+            logger.info(f"Updating Lakeview with params: {params}")
             try:
-                lakeview_id = params.get("lakeview_id")
+                lakeview_id = params.get("id")
+                
+                if not lakeview_id:
+                    return [{"text": json.dumps({"error": "id is a required parameter"})}]
+                
                 name = params.get("name")
+                definition = params.get("definition")
                 description = params.get("description")
-                result = await lakeview.update_lakeview(lakeview_id, name, description)
+                
+                result = await lakeview.update_lakeview(lakeview_id, name, definition, description)
                 return [{"text": json.dumps(result)}]
             except Exception as e:
-                logger.error(f"Error updating LakeView: {str(e)}")
+                logger.error(f"Error updating Lakeview: {str(e)}")
                 return [{"text": json.dumps({"error": str(e)})}]
         
         @self.tool(
             name="delete_lakeview",
-            description="Delete a LakeView with parameter: lakeview_id (required)",
+            description=generate_tool_description(
+                lakeview.delete_lakeview,
+                API_ENDPOINTS["delete_lakeview"]["method"],
+                API_ENDPOINTS["delete_lakeview"]["endpoint"]
+            ),
         )
         async def delete_lakeview(params: Dict[str, Any]) -> List[TextContent]:
-            logger.info(f"Deleting LakeView with params: {params}")
+            logger.info(f"Deleting Lakeview with params: {params}")
             try:
-                lakeview_id = params.get("lakeview_id")
+                lakeview_id = params.get("id")
+                
+                if not lakeview_id:
+                    return [{"text": json.dumps({"error": "id is a required parameter"})}]
+                
                 result = await lakeview.delete_lakeview(lakeview_id)
                 return [{"text": json.dumps(result)}]
             except Exception as e:
-                logger.error(f"Error deleting LakeView: {str(e)}")
+                logger.error(f"Error deleting Lakeview: {str(e)}")
+                return [{"text": json.dumps({"error": str(e)})}]
+        
+        @self.tool(
+            name="list_warehouses",
+            description=generate_tool_description(
+                warehouses.list_warehouses,
+                API_ENDPOINTS["list_warehouses"]["method"],
+                API_ENDPOINTS["list_warehouses"]["endpoint"]
+            ),
+        )
+        async def list_warehouses(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Listing SQL warehouses")
+            try:
+                result = await warehouses.list_warehouses()
+                return [{"text": json.dumps(result)}]
+            except Exception as e:
+                logger.error(f"Error listing SQL warehouses: {str(e)}")
                 return [{"text": json.dumps({"error": str(e)})}]
 
-        # Budget Management Tools
         @self.tool(
-            name="create_budget",
-            description="Create a new budget with parameters: name (required), budget_configuration (required), description (optional)",
+            name="get_warehouse",
+            description=generate_tool_description(
+                warehouses.get_warehouse,
+                API_ENDPOINTS["get_warehouse"]["method"],
+                API_ENDPOINTS["get_warehouse"]["endpoint"]
+            ),
         )
-        async def create_budget(params: Dict[str, Any]) -> List[TextContent]:
+        async def get_warehouse(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Getting SQL warehouse with params: {params}")
             try:
-                name = params.get("name")
-                budget_configuration = params.get("budget_configuration")
-                description = params.get("description")
-                
-                if not name:
-                    return [TextContent(type="text", text="Error: name is required")]
-                if not budget_configuration:
-                    return [TextContent(type="text", text="Error: budget_configuration is required")]
-                
-                result = await budgets.create_budget(name, budget_configuration, description)
-                return [TextContent(type="text", text=json.dumps(result, indent=2))]
+                warehouse_id = params.get("id")
+                result = await warehouses.get_warehouse(warehouse_id)
+                return [{"text": json.dumps(result)}]
             except Exception as e:
-                logger.error(f"Error creating budget: {str(e)}")
-                return [TextContent(type="text", text=f"Error creating budget: {str(e)}")]
+                logger.error(f"Error getting SQL warehouse: {str(e)}")
+                return [{"text": json.dumps({"error": str(e)})}]
 
-        @self.tool(
-            name="list_budgets",
-            description="List all budgets",
-        )
-        async def list_budgets(params: Dict[str, Any]) -> List[TextContent]:
-            try:
-                result = await budgets.list_budgets()
-                return [TextContent(type="text", text=json.dumps(result, indent=2))]
-            except Exception as e:
-                logger.error(f"Error listing budgets: {str(e)}")
-                return [TextContent(type="text", text=f"Error listing budgets: {str(e)}")]
-
-        @self.tool(
-            name="get_budget",
-            description="Get details of a budget with parameter: budget_id (required)",
-        )
-        async def get_budget(params: Dict[str, Any]) -> List[TextContent]:
-            try:
-                budget_id = params.get("budget_id")
-                if not budget_id:
-                    return [TextContent(type="text", text="Error: budget_id is required")]
-                
-                result = await budgets.get_budget(budget_id)
-                return [TextContent(type="text", text=json.dumps(result, indent=2))]
-            except Exception as e:
-                logger.error(f"Error getting budget: {str(e)}")
-                return [TextContent(type="text", text=f"Error getting budget: {str(e)}")]
-
-        @self.tool(
-            name="update_budget",
-            description="Update a budget with parameters: budget_id (required), name (optional), budget_configuration (optional), description (optional)",
-        )
-        async def update_budget(params: Dict[str, Any]) -> List[TextContent]:
-            try:
-                budget_id = params.get("budget_id")
-                name = params.get("name")
-                budget_configuration = params.get("budget_configuration")
-                description = params.get("description")
-                
-                if not budget_id:
-                    return [TextContent(type="text", text="Error: budget_id is required")]
-                
-                result = await budgets.update_budget(budget_id, name, budget_configuration, description)
-                return [TextContent(type="text", text=json.dumps(result, indent=2))]
-            except Exception as e:
-                logger.error(f"Error updating budget: {str(e)}")
-                return [TextContent(type="text", text=f"Error updating budget: {str(e)}")]
-
-        @self.tool(
-            name="delete_budget",
-            description="Delete a budget with parameter: budget_id (required)",
-        )
-        async def delete_budget(params: Dict[str, Any]) -> List[TextContent]:
-            try:
-                budget_id = params.get("budget_id")
-                if not budget_id:
-                    return [TextContent(type="text", text="Error: budget_id is required")]
-                
-                result = await budgets.delete_budget(budget_id)
-                return [TextContent(type="text", text=json.dumps(result, indent=2))]
-            except Exception as e:
-                logger.error(f"Error deleting budget: {str(e)}")
-                return [TextContent(type="text", text=f"Error deleting budget: {str(e)}")]
-
-        # External Location Tools
-        @self.tool(
-            name="create_external_location",
-            description="Create an external location with parameters: name (required), url (required), credential_name (required), comment (optional), read_only (optional)",
-        )
-        async def create_external_location(params: Dict[str, Any]) -> List[TextContent]:
-            try:
-                name = params.get("name")
-                url = params.get("url")
-                credential_name = params.get("credential_name")
-                comment = params.get("comment")
-                read_only = params.get("read_only")
-                
-                if not name:
-                    return [TextContent(type="text", text="Error: name is required")]
-                if not url:
-                    return [TextContent(type="text", text="Error: url is required")]
-                if not credential_name:
-                    return [TextContent(type="text", text="Error: credential_name is required")]
-                
-                result = await external_locations.create_external_location(name, url, credential_name, comment, read_only)
-                return [TextContent(type="text", text=json.dumps(result, indent=2))]
-            except Exception as e:
-                logger.error(f"Error creating external location: {str(e)}")
-                return [TextContent(type="text", text=f"Error creating external location: {str(e)}")]
-
-        @self.tool(
-            name="list_external_locations",
-            description="List external locations with parameter: max_results (optional)",
-        )
-        async def list_external_locations(params: Dict[str, Any]) -> List[TextContent]:
-            try:
-                max_results = params.get("max_results")
-                
-                result = await external_locations.list_external_locations(max_results)
-                return [TextContent(type="text", text=json.dumps(result, indent=2))]
-            except Exception as e:
-                logger.error(f"Error listing external locations: {str(e)}")
-                return [TextContent(type="text", text=f"Error listing external locations: {str(e)}")]
-
-        @self.tool(
-            name="get_external_location",
-            description="Get details of an external location with parameter: name (required)",
-        )
-        async def get_external_location(params: Dict[str, Any]) -> List[TextContent]:
-            try:
-                name = params.get("name")
-                if not name:
-                    return [TextContent(type="text", text="Error: name is required")]
-                
-                result = await external_locations.get_external_location(name)
-                return [TextContent(type="text", text=json.dumps(result, indent=2))]
-            except Exception as e:
-                logger.error(f"Error getting external location: {str(e)}")
-                return [TextContent(type="text", text=f"Error getting external location: {str(e)}")]
-
-        @self.tool(
-            name="update_external_location",
-            description="Update an external location with parameters: name (required), new_name (optional), url (optional), credential_name (optional), comment (optional), owner (optional), read_only (optional)",
-        )
-        async def update_external_location(params: Dict[str, Any]) -> List[TextContent]:
-            try:
-                name = params.get("name")
-                new_name = params.get("new_name")
-                url = params.get("url")
-                credential_name = params.get("credential_name")
-                comment = params.get("comment")
-                owner = params.get("owner")
-                read_only = params.get("read_only")
-                
-                if not name:
-                    return [TextContent(type="text", text="Error: name is required")]
-                
-                result = await external_locations.update_external_location(name, new_name, url, credential_name, comment, owner, read_only)
-                return [TextContent(type="text", text=json.dumps(result, indent=2))]
-            except Exception as e:
-                logger.error(f"Error updating external location: {str(e)}")
-                return [TextContent(type="text", text=f"Error updating external location: {str(e)}")]
-
-        @self.tool(
-            name="delete_external_location",
-            description="Delete an external location with parameter: name (required)",
-        )
-        async def delete_external_location(params: Dict[str, Any]) -> List[TextContent]:
-            try:
-                name = params.get("name")
-                if not name:
-                    return [TextContent(type="text", text="Error: name is required")]
-                
-                result = await external_locations.delete_external_location(name)
-                return [TextContent(type="text", text=json.dumps(result, indent=2))]
-            except Exception as e:
-                logger.error(f"Error deleting external location: {str(e)}")
-                return [TextContent(type="text", text=f"Error deleting external location: {str(e)}")]
-
-        # SQL Warehouse Tools
         @self.tool(
             name="create_warehouse",
-            description="Create a SQL warehouse with parameters: name (required), cluster_size (required), auto_stop_mins (optional), min_num_clusters (optional), max_num_clusters (optional), enable_photon (optional)",
+            description=generate_tool_description(
+                warehouses.create_warehouse,
+                API_ENDPOINTS["create_warehouse"]["method"],
+                API_ENDPOINTS["create_warehouse"]["endpoint"]
+            ),
         )
         async def create_warehouse(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Creating SQL warehouse with params: {params}")
             try:
                 name = params.get("name")
                 cluster_size = params.get("cluster_size")
+                
+                if not name or not cluster_size:
+                    return [{"text": json.dumps({"error": "name and cluster_size are required parameters"})}]
+                
                 auto_stop_mins = params.get("auto_stop_mins")
                 min_num_clusters = params.get("min_num_clusters")
                 max_num_clusters = params.get("max_num_clusters")
                 enable_photon = params.get("enable_photon")
-                additional_params = params.get("additional_params")
-                
-                if not name:
-                    return [TextContent(type="text", text="Error: name is required")]
-                if not cluster_size:
-                    return [TextContent(type="text", text="Error: cluster_size is required")]
                 
                 result = await warehouses.create_warehouse(
                     name, 
@@ -1888,142 +2182,367 @@ class DatabricksMCPServer(FastMCP):
                     auto_stop_mins, 
                     min_num_clusters, 
                     max_num_clusters, 
-                    enable_photon, 
-                    additional_params
+                    enable_photon
                 )
-                return [TextContent(type="text", text=json.dumps(result, indent=2))]
+                return [{"text": json.dumps(result)}]
             except Exception as e:
                 logger.error(f"Error creating SQL warehouse: {str(e)}")
-                return [TextContent(type="text", text=f"Error creating SQL warehouse: {str(e)}")]
-
-        @self.tool(
-            name="start_warehouse",
-            description="Start a SQL warehouse with parameter: id (required)",
-        )
-        async def start_warehouse(params: Dict[str, Any]) -> List[TextContent]:
-            try:
-                warehouse_id = params.get("id")
-                if not warehouse_id:
-                    return [TextContent(type="text", text="Error: id is required")]
-                
-                result = await warehouses.start_warehouse(warehouse_id)
-                return [TextContent(type="text", text=json.dumps(result, indent=2))]
-            except Exception as e:
-                logger.error(f"Error starting SQL warehouse: {str(e)}")
-                return [TextContent(type="text", text=f"Error starting SQL warehouse: {str(e)}")]
-
+                return [{"text": json.dumps({"error": str(e)})}]
+        
         @self.tool(
             name="update_warehouse",
-            description="Update a SQL warehouse with parameters: id (required), name (optional), cluster_size (optional), auto_stop_mins (optional), min_num_clusters (optional), max_num_clusters (optional), enable_photon (optional)",
+            description=generate_tool_description(
+                warehouses.update_warehouse,
+                API_ENDPOINTS["update_warehouse"]["method"],
+                API_ENDPOINTS["update_warehouse"]["endpoint"]
+            ),
         )
         async def update_warehouse(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Updating SQL warehouse with params: {params}")
             try:
                 warehouse_id = params.get("id")
+                
+                if not warehouse_id:
+                    return [{"text": json.dumps({"error": "id is a required parameter"})}]
+                
                 name = params.get("name")
                 cluster_size = params.get("cluster_size")
                 auto_stop_mins = params.get("auto_stop_mins")
                 min_num_clusters = params.get("min_num_clusters")
                 max_num_clusters = params.get("max_num_clusters")
                 enable_photon = params.get("enable_photon")
-                additional_params = params.get("additional_params")
-                
-                if not warehouse_id:
-                    return [TextContent(type="text", text="Error: id is required")]
                 
                 result = await warehouses.update_warehouse(
-                    warehouse_id, 
+                    warehouse_id,
                     name, 
                     cluster_size, 
                     auto_stop_mins, 
                     min_num_clusters, 
                     max_num_clusters, 
-                    enable_photon, 
-                    additional_params
+                    enable_photon
                 )
-                return [TextContent(type="text", text=json.dumps(result, indent=2))]
+                return [{"text": json.dumps(result)}]
             except Exception as e:
                 logger.error(f"Error updating SQL warehouse: {str(e)}")
-                return [TextContent(type="text", text=f"Error updating SQL warehouse: {str(e)}")]
-
+                return [{"text": json.dumps({"error": str(e)})}]
+        
         @self.tool(
             name="delete_warehouse",
-            description="Delete a SQL warehouse with parameter: id (required)",
+            description=generate_tool_description(
+                warehouses.delete_warehouse,
+                API_ENDPOINTS["delete_warehouse"]["method"],
+                API_ENDPOINTS["delete_warehouse"]["endpoint"]
+            ),
         )
         async def delete_warehouse(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Deleting SQL warehouse with params: {params}")
             try:
                 warehouse_id = params.get("id")
+                
                 if not warehouse_id:
-                    return [TextContent(type="text", text="Error: id is required")]
+                    return [{"text": json.dumps({"error": "id is a required parameter"})}]
                 
                 result = await warehouses.delete_warehouse(warehouse_id)
-                return [TextContent(type="text", text=json.dumps(result, indent=2))]
+                return [{"text": json.dumps(result)}]
             except Exception as e:
                 logger.error(f"Error deleting SQL warehouse: {str(e)}")
-                return [TextContent(type="text", text=f"Error deleting SQL warehouse: {str(e)}")]
-
+                return [{"text": json.dumps({"error": str(e)})}]
+        
+        @self.tool(
+            name="start_warehouse",
+            description=generate_tool_description(
+                warehouses.start_warehouse,
+                API_ENDPOINTS["start_warehouse"]["method"],
+                API_ENDPOINTS["start_warehouse"]["endpoint"]
+            ),
+        )
+        async def start_warehouse(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Starting SQL warehouse with params: {params}")
+            try:
+                warehouse_id = params.get("id")
+                
+                if not warehouse_id:
+                    return [{"text": json.dumps({"error": "id is a required parameter"})}]
+                
+                result = await warehouses.start_warehouse(warehouse_id)
+                return [{"text": json.dumps(result)}]
+            except Exception as e:
+                logger.error(f"Error starting SQL warehouse: {str(e)}")
+                return [{"text": json.dumps({"error": str(e)})}]
+        
         @self.tool(
             name="stop_warehouse",
-            description="Stop a SQL warehouse with parameter: id (required)",
+            description=generate_tool_description(
+                warehouses.stop_warehouse,
+                API_ENDPOINTS["stop_warehouse"]["method"],
+                API_ENDPOINTS["stop_warehouse"]["endpoint"]
+            ),
         )
         async def stop_warehouse(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Stopping SQL warehouse with params: {params}")
             try:
                 warehouse_id = params.get("id")
+                
                 if not warehouse_id:
-                    return [TextContent(type="text", text="Error: id is required")]
+                    return [{"text": json.dumps({"error": "id is a required parameter"})}]
                 
                 result = await warehouses.stop_warehouse(warehouse_id)
-                return [TextContent(type="text", text=json.dumps(result, indent=2))]
+                return [{"text": json.dumps(result)}]
             except Exception as e:
                 logger.error(f"Error stopping SQL warehouse: {str(e)}")
-                return [TextContent(type="text", text=f"Error stopping SQL warehouse: {str(e)}")]
-
-        @self.tool(
-            name="list_warehouses",
-            description="List all SQL warehouses",
-        )
-        async def list_warehouses(params: Dict[str, Any]) -> List[TextContent]:
-            try:
-                result = await warehouses.list_warehouses()
-                return [TextContent(type="text", text=json.dumps(result, indent=2))]
-            except Exception as e:
-                logger.error(f"Error listing SQL warehouses: {str(e)}")
-                return [TextContent(type="text", text=f"Error listing SQL warehouses: {str(e)}")]
-
-        @self.tool(
-            name="get_warehouse",
-            description="Get information about a specific SQL warehouse with parameter: id (required)",
-        )
-        async def get_warehouse(params: Dict[str, Any]) -> List[TextContent]:
-            try:
-                warehouse_id = params.get("id")
-                if not warehouse_id:
-                    return [TextContent(type="text", text="Error: id is required")]
-                
-                result = await warehouses.get_warehouse(warehouse_id)
-                return [TextContent(type="text", text=json.dumps(result, indent=2))]
-            except Exception as e:
-                logger.error(f"Error getting SQL warehouse: {str(e)}")
-                return [TextContent(type="text", text=f"Error getting SQL warehouse: {str(e)}")]
-
-
-async def main():
-    """Main entry point for the MCP server."""
-    try:
-        logger.info("Starting Databricks MCP server")
-        server = DatabricksMCPServer()
+                return [{"text": json.dumps({"error": str(e)})}]
         
-        # Use the built-in method for stdio servers
-        # This is the recommended approach for MCP servers
+        # Budget tools
+        @self.tool(
+            name="list_budgets",
+            description=generate_tool_description(
+                budgets.list_budgets,
+                API_ENDPOINTS["list_budgets"]["method"],
+                API_ENDPOINTS["list_budgets"]["endpoint"]
+            ),
+        )
+        async def list_budgets(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Listing budgets")
+            try:
+                result = await budgets.list_budgets()
+                return [{"text": json.dumps(result)}]
+            except Exception as e:
+                logger.error(f"Error listing budgets: {str(e)}")
+                return [{"text": json.dumps({"error": str(e)})}]
+
+        @self.tool(
+            name="create_budget",
+            description=generate_tool_description(
+                budgets.create_budget,
+                API_ENDPOINTS["create_budget"]["method"],
+                API_ENDPOINTS["create_budget"]["endpoint"]
+            ),
+        )
+        async def create_budget(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Creating budget with params: {params}")
+            try:
+                name = params.get("name")
+                amount = params.get("amount")
+                period = params.get("period")
+                filters = params.get("filters")
+                start_date = params.get("start_date")
+                
+                if not name or not amount or not period:
+                    return [{"text": json.dumps({"error": "name, amount, and period are required parameters"})}]
+                
+                result = await budgets.create_budget(name, amount, period, filters, start_date)
+                return [{"text": json.dumps(result)}]
+            except Exception as e:
+                logger.error(f"Error creating budget: {str(e)}")
+                return [{"text": json.dumps({"error": str(e)})}]
+        
+        @self.tool(
+            name="get_budget",
+            description=generate_tool_description(
+                budgets.get_budget,
+                API_ENDPOINTS["get_budget"]["method"],
+                API_ENDPOINTS["get_budget"]["endpoint"]
+            ),
+        )
+        async def get_budget(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Getting budget with params: {params}")
+            try:
+                budget_id = params.get("budget_id")
+                
+                if not budget_id:
+                    return [{"text": json.dumps({"error": "budget_id is a required parameter"})}]
+                
+                result = await budgets.get_budget(budget_id)
+                return [{"text": json.dumps(result)}]
+            except Exception as e:
+                logger.error(f"Error getting budget: {str(e)}")
+                return [{"text": json.dumps({"error": str(e)})}]
+        
+        @self.tool(
+            name="update_budget",
+            description=generate_tool_description(
+                budgets.update_budget,
+                API_ENDPOINTS["update_budget"]["method"],
+                API_ENDPOINTS["update_budget"]["endpoint"]
+            ),
+        )
+        async def update_budget(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Updating budget with params: {params}")
+            try:
+                budget_id = params.get("budget_id")
+                
+                if not budget_id:
+                    return [{"text": json.dumps({"error": "budget_id is a required parameter"})}]
+                
+                name = params.get("name")
+                amount = params.get("amount")
+                period = params.get("period")
+                filters = params.get("filters")
+                start_date = params.get("start_date")
+                
+                result = await budgets.update_budget(budget_id, name, amount, period, filters, start_date)
+                return [{"text": json.dumps(result)}]
+            except Exception as e:
+                logger.error(f"Error updating budget: {str(e)}")
+                return [{"text": json.dumps({"error": str(e)})}]
+        
+        @self.tool(
+            name="delete_budget",
+            description=generate_tool_description(
+                budgets.delete_budget,
+                API_ENDPOINTS["delete_budget"]["method"],
+                API_ENDPOINTS["delete_budget"]["endpoint"]
+            ),
+        )
+        async def delete_budget(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Deleting budget with params: {params}")
+            try:
+                budget_id = params.get("budget_id")
+                
+                if not budget_id:
+                    return [{"text": json.dumps({"error": "budget_id is a required parameter"})}]
+                
+                result = await budgets.delete_budget(budget_id)
+                return [{"text": json.dumps(result)}]
+            except Exception as e:
+                logger.error(f"Error deleting budget: {str(e)}")
+                return [{"text": json.dumps({"error": str(e)})}]
+        
+        # External Locations tools
+        @self.tool(
+            name="list_external_locations",
+            description=generate_tool_description(
+                external_locations.list_external_locations,
+                API_ENDPOINTS["list_external_locations"]["method"],
+                API_ENDPOINTS["list_external_locations"]["endpoint"]
+            ),
+        )
+        async def list_external_locations(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Listing external locations")
+            try:
+                max_results = params.get("max_results")
+                result = await external_locations.list_external_locations(max_results)
+                return [{"text": json.dumps(result)}]
+            except Exception as e:
+                logger.error(f"Error listing external locations: {str(e)}")
+                return [{"text": json.dumps({"error": str(e)})}]
+
+        @self.tool(
+            name="create_external_location",
+            description=generate_tool_description(
+                external_locations.create_external_location,
+                API_ENDPOINTS["create_external_location"]["method"],
+                API_ENDPOINTS["create_external_location"]["endpoint"]
+            ),
+        )
+        async def create_external_location(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Creating external location with params: {params}")
+            try:
+                name = params.get("name")
+                url = params.get("url")
+                credential_name = params.get("credential_name")
+                comment = params.get("comment")
+                
+                if not name or not url or not credential_name:
+                    return [{"text": json.dumps({"error": "name, url, and credential_name are required parameters"})}]
+                
+                result = await external_locations.create_external_location(name, url, credential_name, comment)
+                return [{"text": json.dumps(result)}]
+            except Exception as e:
+                logger.error(f"Error creating external location: {str(e)}")
+                return [{"text": json.dumps({"error": str(e)})}]
+        
+        @self.tool(
+            name="get_external_location",
+            description=generate_tool_description(
+                external_locations.get_external_location,
+                API_ENDPOINTS["get_external_location"]["method"],
+                API_ENDPOINTS["get_external_location"]["endpoint"]
+            ),
+        )
+        async def get_external_location(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Getting external location with params: {params}")
+            try:
+                name = params.get("name")
+                
+                if not name:
+                    return [{"text": json.dumps({"error": "name is a required parameter"})}]
+                
+                result = await external_locations.get_external_location(name)
+                return [{"text": json.dumps(result)}]
+            except Exception as e:
+                logger.error(f"Error getting external location: {str(e)}")
+                return [{"text": json.dumps({"error": str(e)})}]
+        
+        @self.tool(
+            name="update_external_location",
+            description=generate_tool_description(
+                external_locations.update_external_location,
+                API_ENDPOINTS["update_external_location"]["method"],
+                API_ENDPOINTS["update_external_location"]["endpoint"]
+            ),
+        )
+        async def update_external_location(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Updating external location with params: {params}")
+            try:
+                name = params.get("name")
+                
+                if not name:
+                    return [{"text": json.dumps({"error": "name is a required parameter"})}]
+                
+                new_name = params.get("new_name")
+                url = params.get("url")
+                credential_name = params.get("credential_name")
+                comment = params.get("comment")
+                owner = params.get("owner")
+                
+                result = await external_locations.update_external_location(name, new_name, url, credential_name, comment, owner)
+                return [{"text": json.dumps(result)}]
+            except Exception as e:
+                logger.error(f"Error updating external location: {str(e)}")
+                return [{"text": json.dumps({"error": str(e)})}]
+        
+        @self.tool(
+            name="delete_external_location",
+            description=generate_tool_description(
+                external_locations.delete_external_location,
+                API_ENDPOINTS["delete_external_location"]["method"],
+                API_ENDPOINTS["delete_external_location"]["endpoint"]
+            ),
+        )
+        async def delete_external_location(params: Dict[str, Any]) -> List[TextContent]:
+            logger.info(f"Deleting external location with params: {params}")
+            try:
+                name = params.get("name")
+                
+                if not name:
+                    return [{"text": json.dumps({"error": "name is a required parameter"})}]
+                
+                result = await external_locations.delete_external_location(name)
+                return [{"text": json.dumps(result)}]
+            except Exception as e:
+                logger.error(f"Error deleting external location: {str(e)}")
+                return [{"text": json.dumps({"error": str(e)})}]
+
+async def main() -> None:
+    """Main entry point for the Databricks MCP server."""
+    logger.info("Starting Databricks MCP server")
+    try:
+        server = DatabricksMCPServer()
+        # Use the built-in method for running the server via stdio
         await server.run_stdio_async()
-            
     except Exception as e:
         logger.error(f"Error in Databricks MCP server: {str(e)}", exc_info=True)
+        # Re-raise to indicate error to caller
         raise
 
-
 if __name__ == "__main__":
-    # Turn off buffering in stdout
-    if hasattr(sys.stdout, 'reconfigure'):
-        sys.stdout.reconfigure(line_buffering=True)
-    
-    asyncio.run(main()) 
+    try:
+        # Turn off buffering in stdout if supported
+        if hasattr(sys.stdout, 'reconfigure'):
+            sys.stdout.reconfigure(line_buffering=True)
+        
+        asyncio.run(main())
+    except Exception as e:
+        logger.error(f"Fatal error: {str(e)}", exc_info=True)
+        sys.exit(1) 
