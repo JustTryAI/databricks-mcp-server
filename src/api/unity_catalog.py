@@ -382,41 +382,121 @@ async def delete_table(full_name: str) -> Dict[str, Any]:
 async def create_storage_credential(
     name: str,
     aws_credentials: Optional[Dict[str, Any]] = None,
-    azure_credentials: Optional[Dict[str, Any]] = None,
+    azure_service_principal: Optional[Dict[str, Any]] = None,
+    azure_managed_identity: Optional[Dict[str, Any]] = None,
     gcp_credentials: Optional[Dict[str, Any]] = None,
-    comment: Optional[str] = None
+    comment: Optional[str] = None,
+    read_only: Optional[bool] = None,
+    skip_validation: Optional[bool] = None
 ) -> Dict[str, Any]:
     """
     Create a new storage credential in the Unity Catalog.
     
     Args:
-        name: Name of the storage credential
+        name: Name of the storage credential (required)
         aws_credentials: Optional AWS credentials configuration
-        azure_credentials: Optional Azure credentials configuration
+            - Must include "access_key" and "secret_key" keys
+        azure_service_principal: Optional Azure service principal credentials
+            - Must include "directory_id", "application_id", and "client_secret" keys
+        azure_managed_identity: Optional Azure managed identity credentials
+            - Must include "access_connector_id" key in format:
+              /subscriptions/{guid}/resourceGroups/{rg-name}/providers/Microsoft.Databricks/accessConnectors/{connector-name}
+            - May optionally include "managed_identity_id" for user-assigned identities
         gcp_credentials: Optional GCP credentials configuration
+            - Must include "email" and "privateKey" keys
         comment: Optional comment for the storage credential
+        read_only: Optional flag to specify if credential is read-only
+        skip_validation: Optional flag to skip validation of the credential
         
     Returns:
         Response containing the created storage credential info
         
     Raises:
+        ValueError: If required parameters are missing or invalid
         DatabricksAPIError: If the API request fails
     """
+    if not name:
+        raise ValueError("Storage credential name is required")
+    
     logger.info(f"Creating new storage credential: {name}")
+    
+    # Validate that at least one credential type is provided
+    credential_types = [aws_credentials, azure_service_principal, azure_managed_identity, gcp_credentials]
+    if not any(credential_types):
+        raise ValueError(
+            "At least one credential type must be provided: "
+            "aws_credentials, azure_service_principal, azure_managed_identity, or gcp_credentials"
+        )
+    
+    # Check for multiple credential types being provided
+    provided_credentials = [cred_type for cred_type in credential_types if cred_type is not None]
+    if len(provided_credentials) > 1:
+        raise ValueError("Only one credential type can be specified at a time")
     
     data = {"name": name}
     
+    # Add and validate credentials
     if aws_credentials:
+        if not isinstance(aws_credentials, dict):
+            raise ValueError("aws_credentials must be a dictionary")
         data["aws_credentials"] = aws_credentials
-    elif azure_credentials:
-        data["azure_managed_identity"] = azure_credentials
-    elif gcp_credentials:
+    
+    if azure_service_principal:
+        if not isinstance(azure_service_principal, dict):
+            raise ValueError("azure_service_principal must be a dictionary")
+        
+        # Check required fields for Azure service principal
+        required_fields = ["directory_id", "application_id"]
+        for field in required_fields:
+            if field not in azure_service_principal:
+                raise ValueError(f"Required field '{field}' missing in azure_service_principal")
+        
+        data["azure_service_principal"] = azure_service_principal
+    
+    if azure_managed_identity:
+        if not isinstance(azure_managed_identity, dict):
+            raise ValueError("azure_managed_identity must be a dictionary")
+        
+        # Check required field for Azure managed identity
+        if "access_connector_id" not in azure_managed_identity:
+            raise ValueError("Required field 'access_connector_id' missing in azure_managed_identity")
+        
+        # Validate format of access_connector_id
+        access_connector_id = azure_managed_identity.get("access_connector_id")
+        if not access_connector_id.startswith("/subscriptions/"):
+            logger.warning(
+                f"access_connector_id format may be invalid: {access_connector_id}. "
+                f"Expected format: /subscriptions/{{guid}}/resourceGroups/{{rg-name}}/"
+                f"providers/Microsoft.Databricks/accessConnectors/{{connector-name}}"
+            )
+        
+        data["azure_managed_identity"] = azure_managed_identity
+    
+    if gcp_credentials:
+        if not isinstance(gcp_credentials, dict):
+            raise ValueError("gcp_credentials must be a dictionary")
         data["gcp_service_account"] = gcp_credentials
     
+    # Add optional parameters
     if comment:
         data["comment"] = comment
+    if read_only is not None:
+        data["read_only"] = read_only
+    if skip_validation is not None:
+        data["skip_validation"] = skip_validation
     
-    return make_api_request("POST", "/api/2.1/unity-catalog/storage-credentials", data=data)
+    # Make the API request
+    try:
+        return make_api_request("POST", "/api/2.1/unity-catalog/storage-credentials", data=data)
+    except DatabricksAPIError as e:
+        logger.error(f"API error creating storage credential: {str(e)}")
+        # Enhance error message with potential solutions
+        if "400" in str(e):
+            if azure_service_principal and "client_secret" not in azure_service_principal:
+                logger.error("Azure service principal is missing client_secret which is required by the API")
+            if azure_managed_identity and "access_connector_id" in azure_managed_identity:
+                logger.error("Check that the access_connector_id format is correct and the connector exists")
+        raise
 
 
 async def get_storage_credential(name: str) -> Dict[str, Any]:

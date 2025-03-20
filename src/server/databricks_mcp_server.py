@@ -1524,15 +1524,88 @@ class DatabricksMCPServer(FastMCP):
         async def create_storage_credential(params: Dict[str, Any]) -> List[TextContent]:
             logger.info(f"Creating storage credential with params: {params}")
             try:
+                # Extract parameters from the request
                 name = params.get("name")
-                aws_iam_role = params.get("aws_iam_role")
-                azure_service_principal = params.get("azure_service_principal")
                 comment = params.get("comment")
-                result = await unity_catalog.create_storage_credential(name, aws_iam_role, azure_service_principal, comment)
+                read_only = params.get("read_only")
+                skip_validation = params.get("skip_validation")
+                
+                # Extract credential-specific parameters
+                aws_credentials = params.get("aws_credentials")
+                azure_service_principal = params.get("azure_service_principal")
+                azure_managed_identity = params.get("azure_managed_identity")
+                gcp_credentials = params.get("gcp_service_account")
+                
+                # Validation checks
+                if not name:
+                    raise ValueError("Required parameter 'name' is missing")
+                
+                # Check that at least one credential type is provided
+                credential_types = [
+                    aws_credentials, 
+                    azure_service_principal, 
+                    azure_managed_identity, 
+                    gcp_credentials
+                ]
+                if not any(credential_types):
+                    raise ValueError("At least one credential type (aws_credentials, azure_service_principal, azure_managed_identity, gcp_service_account) must be provided")
+                
+                # Validate Azure service principal if provided
+                if azure_service_principal:
+                    if not isinstance(azure_service_principal, dict):
+                        raise ValueError("azure_service_principal must be a dictionary")
+                    
+                    required_fields = ["directory_id", "application_id"]
+                    missing_fields = [field for field in required_fields if field not in azure_service_principal]
+                    
+                    if missing_fields:
+                        raise ValueError(f"Required fields missing in azure_service_principal: {', '.join(missing_fields)}")
+                    
+                    # client_secret is required by API but may be omitted in certain scenarios 
+                    # (e.g., if using workload identity federation)
+                    if "client_secret" not in azure_service_principal:
+                        logger.warning("azure_service_principal.client_secret is not provided, this may cause API errors if not using managed identity")
+                
+                # Validate Azure managed identity if provided
+                if azure_managed_identity:
+                    if not isinstance(azure_managed_identity, dict):
+                        raise ValueError("azure_managed_identity must be a dictionary")
+                    
+                    if "access_connector_id" not in azure_managed_identity:
+                        raise ValueError("access_connector_id is required for azure_managed_identity")
+                    
+                    # Validate access_connector_id format
+                    access_connector_id = azure_managed_identity.get("access_connector_id")
+                    if not access_connector_id.startswith("/subscriptions/"):
+                        logger.warning(f"access_connector_id may have invalid format: {access_connector_id}. Expected format: /subscriptions/{{guid}}/resourceGroups/{{rg-name}}/providers/Microsoft.Databricks/accessConnectors/{{connector-name}}")
+                
+                # Pass validated parameters to the API function
+                result = await unity_catalog.create_storage_credential(
+                    name=name,
+                    aws_credentials=aws_credentials,
+                    azure_service_principal=azure_service_principal,
+                    azure_managed_identity=azure_managed_identity,
+                    gcp_credentials=gcp_credentials,
+                    comment=comment,
+                    read_only=read_only,
+                    skip_validation=skip_validation
+                )
                 return [{"text": json.dumps(result)}]
+            except ValueError as e:
+                # Handle validation errors
+                error_message = f"Validation error: {str(e)}"
+                logger.error(error_message)
+                return [{"text": json.dumps({"error": error_message})}]
+            except DatabricksAPIError as e:
+                # Handle Databricks API errors
+                error_message = f"Databricks API error: {str(e)}"
+                logger.error(error_message)
+                return [{"text": json.dumps({"error": error_message})}]
             except Exception as e:
-                logger.error(f"Error creating storage credential: {str(e)}")
-                return [{"text": json.dumps({"error": str(e)})}]
+                # Handle other errors
+                error_message = f"Error creating storage credential: {str(e)}"
+                logger.error(error_message)
+                return [{"text": json.dumps({"error": error_message})}]
         
         @self.tool(
             name="get_storage_credential",
