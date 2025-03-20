@@ -17,7 +17,24 @@ from mcp.server import FastMCP
 from mcp.types import TextContent
 from mcp.server.stdio import stdio_server
 
-from src.api import clusters, dbfs, jobs, notebooks, sql, unity_catalog, sql_queries, commands, libraries, workspace, pipelines, service_principals, lakeview, warehouses, budgets, external_locations
+from src.api import (
+    budgets,
+    clusters,
+    commands,
+    dbfs,
+    external_locations,
+    jobs,
+    lakeview,
+    libraries,
+    notebooks,
+    pipelines,
+    service_principals,
+    sql,
+    sql_queries,
+    unity_catalog,
+    warehouses,
+    workspace,
+)
 from src.core.config import settings
 from src.core.utils import generate_tool_description, API_ENDPOINTS
 
@@ -74,13 +91,31 @@ class DatabricksMCPServer(FastMCP):
             ),
         )
         async def create_cluster(params: Dict[str, Any]) -> List[TextContent]:
-            logger.info(f"Creating cluster with params: {params}")
+            """Create a new Databricks cluster."""
             try:
-                result = await clusters.create_cluster(params)
-                return [{"text": json.dumps(result)}]
+                # Validate cluster_config is present
+                if "cluster_config" not in params:
+                    raise ValueError("Required parameter 'cluster_config' is missing")
+                
+                # Validate basic cluster config requirements
+                cluster_config = params["cluster_config"]
+                if not isinstance(cluster_config, dict):
+                    raise ValueError("cluster_config must be a dictionary")
+                
+                # Check for essential cluster configuration parameters
+                essential_params = ["spark_version", "node_type_id"]
+                for param in essential_params:
+                    if param not in cluster_config:
+                        raise ValueError(f"Cluster config is missing required parameter: '{param}'")
+                
+                # Either autoscale or num_workers should be specified
+                if "num_workers" not in cluster_config and "autoscale" not in cluster_config:
+                    raise ValueError("Either 'num_workers' or 'autoscale' must be specified in cluster_config")
+                
+                result = await clusters.create_cluster(**params)
+                return [TextContent(text=json.dumps(result))]
             except Exception as e:
-                logger.error(f"Error creating cluster: {str(e)}")
-                return [{"text": json.dumps({"error": str(e)})}]
+                return [TextContent(text=json.dumps({"error": str(e)}))]
         
         @self.tool(
             name="terminate_cluster",
@@ -108,13 +143,20 @@ class DatabricksMCPServer(FastMCP):
             ),
         )
         async def get_cluster(params: Dict[str, Any]) -> List[TextContent]:
-            logger.info(f"Getting cluster info with params: {params}")
+            """Get information about a specific cluster."""
             try:
-                result = await clusters.get_cluster(params.get("cluster_id"))
-                return [{"text": json.dumps(result)}]
+                # Validate required parameters
+                if "cluster_id" not in params:
+                    raise ValueError("Required parameter 'cluster_id' is missing")
+                
+                # Validate cluster_id format
+                if not isinstance(params["cluster_id"], str) or not params["cluster_id"]:
+                    raise ValueError("cluster_id must be a non-empty string")
+                
+                result = await clusters.get_cluster(**params)
+                return [TextContent(text=json.dumps(result))]
             except Exception as e:
-                logger.error(f"Error getting cluster info: {str(e)}")
-                return [{"text": json.dumps({"error": str(e)})}]
+                return [TextContent(text=json.dumps({"error": str(e)}))]
         
         @self.tool(
             name="start_cluster",
@@ -537,18 +579,34 @@ class DatabricksMCPServer(FastMCP):
             ),
         )
         async def import_workspace_file(params: Dict[str, Any]) -> List[TextContent]:
-            logger.info(f"Importing workspace file with params: {params}")
+            """Import a file to the workspace."""
             try:
-                path = params.get("path")
-                format = params.get("format")
-                content = params.get("content")
-                language = params.get("language")
-                overwrite = params.get("overwrite", False)
-                result = await workspace.import_files(path, format, content, language, overwrite)
-                return [{"text": json.dumps(result)}]
+                # Validate required parameters
+                required_params = ["path", "format", "content"]
+                for param in required_params:
+                    if param not in params:
+                        raise ValueError(f"Required parameter '{param}' is missing")
+                
+                # Validate content is base64 encoded
+                if "content" in params:
+                    content = params["content"]
+                    try:
+                        # Try decoding to ensure it's valid base64
+                        import base64
+                        base64.b64decode(content)
+                    except Exception:
+                        raise ValueError("The 'content' parameter must be base64 encoded")
+                
+                # Validate format is one of the allowed values
+                if "format" in params:
+                    allowed_formats = ["SOURCE", "HTML", "JUPYTER", "DBC", "AUTO"]
+                    if params["format"] not in allowed_formats:
+                        raise ValueError(f"Format must be one of: {', '.join(allowed_formats)}")
+                
+                result = await workspace.import_files(**params)
+                return [TextContent(text=json.dumps(result))]
             except Exception as e:
-                logger.error(f"Error importing workspace file: {str(e)}")
-                return [{"text": json.dumps({"error": str(e)})}]
+                return [TextContent(text=json.dumps({"error": str(e)}))]
         
         @self.tool(
             name="export_workspace_file",
@@ -615,14 +673,14 @@ class DatabricksMCPServer(FastMCP):
             ),
         )
         async def create_workspace_directory(params: Dict[str, Any]) -> List[TextContent]:
-            logger.info(f"Creating workspace directory with params: {params}")
+            """Create a directory in the workspace."""
             try:
                 path = params.get("path")
                 result = await workspace.mkdirs(path)
-                return [{"text": json.dumps(result)}]
+                return [TextContent(type="text", text=json.dumps(result))]
             except Exception as e:
                 logger.error(f"Error creating workspace directory: {str(e)}")
-                return [{"text": json.dumps({"error": str(e)})}]
+                return [TextContent(type="text", text=json.dumps({"error": str(e)}))]
         
         # SQL tools
         @self.tool(
@@ -634,18 +692,32 @@ class DatabricksMCPServer(FastMCP):
             ),
         )
         async def execute_sql(params: Dict[str, Any]) -> List[TextContent]:
-            logger.info(f"Executing SQL with params: {params}")
+            """Execute a SQL statement."""
             try:
-                statement = params.get("statement")
-                warehouse_id = params.get("warehouse_id")
-                catalog = params.get("catalog")
-                schema = params.get("schema")
+                # Validate required parameters
+                required_params = ["statement", "warehouse_id"]
+                for param in required_params:
+                    if param not in params:
+                        raise ValueError(f"Required parameter '{param}' is missing")
                 
-                result = await sql.execute_sql(statement, warehouse_id, catalog, schema)
-                return [{"text": json.dumps(result)}]
+                # Validate statement is a non-empty string
+                if not params.get("statement") or not isinstance(params.get("statement"), str):
+                    raise ValueError("'statement' must be a non-empty string")
+                
+                # Validate warehouse_id is a string
+                if not isinstance(params.get("warehouse_id"), str):
+                    raise ValueError("'warehouse_id' must be a string")
+                
+                # Validate row_limit is a positive integer if provided
+                if "row_limit" in params and (
+                    not isinstance(params["row_limit"], int) or params["row_limit"] <= 0
+                ):
+                    raise ValueError("'row_limit' must be a positive integer")
+                
+                result = await sql.execute_sql(**params)
+                return [TextContent(type="text", text=json.dumps(result))]
             except Exception as e:
-                logger.error(f"Error executing SQL: {str(e)}")
-                return [{"text": json.dumps({"error": str(e)})}]
+                return [TextContent(type="text", text=json.dumps({"error": str(e)}))]
         
         # Unity Catalog tools
         
@@ -663,10 +735,10 @@ class DatabricksMCPServer(FastMCP):
             try:
                 max_results = params.get("max_results")
                 result = await unity_catalog.list_catalogs(max_results)
-                return [{"text": json.dumps(result)}]
+                return [TextContent(type="text", text=json.dumps(result))]
             except Exception as e:
                 logger.error(f"Error listing catalogs: {str(e)}")
-                return [{"text": json.dumps({"error": str(e)})}]
+                return [TextContent(type="text", text=json.dumps({"error": str(e)}))]
         
         @self.tool(
             name="create_catalog",
@@ -682,10 +754,10 @@ class DatabricksMCPServer(FastMCP):
                 name = params.get("name")
                 comment = params.get("comment")
                 result = await unity_catalog.create_catalog(name, comment)
-                return [{"text": json.dumps(result)}]
+                return [TextContent(type="text", text=json.dumps(result))]
             except Exception as e:
                 logger.error(f"Error creating catalog: {str(e)}")
-                return [{"text": json.dumps({"error": str(e)})}]
+                return [TextContent(type="text", text=json.dumps({"error": str(e)}))]
         
         @self.tool(
             name="get_catalog",
@@ -700,10 +772,10 @@ class DatabricksMCPServer(FastMCP):
             try:
                 name = params.get("name")
                 result = await unity_catalog.get_catalog(name)
-                return [{"text": json.dumps(result)}]
+                return [TextContent(type="text", text=json.dumps(result))]
             except Exception as e:
                 logger.error(f"Error getting catalog: {str(e)}")
-                return [{"text": json.dumps({"error": str(e)})}]
+                return [TextContent(type="text", text=json.dumps({"error": str(e)}))]
         
         @self.tool(
             name="update_catalog",
@@ -714,16 +786,28 @@ class DatabricksMCPServer(FastMCP):
             ),
         )
         async def update_catalog(params: Dict[str, Any]) -> List[TextContent]:
-            logger.info(f"Updating catalog with params: {params}")
+            """Update a catalog in the Unity Catalog."""
             try:
-                name = params.get("name")
-                new_name = params.get("new_name")
-                comment = params.get("comment")
-                result = await unity_catalog.update_catalog(name, new_name, comment)
-                return [{"text": json.dumps(result)}]
+                # Validate required parameter
+                if "name" not in params:
+                    raise ValueError("Required parameter 'name' is missing")
+                
+                # Validate parameter types
+                if not isinstance(params["name"], str) or not params["name"]:
+                    raise ValueError("name must be a non-empty string")
+                
+                # Validate new_name if provided
+                if "new_name" in params and (not isinstance(params["new_name"], str) or not params["new_name"]):
+                    raise ValueError("new_name must be a non-empty string")
+                
+                # Validate comment is a string if provided
+                if "comment" in params and not isinstance(params["comment"], str):
+                    raise ValueError("comment must be a string")
+                
+                result = await unity_catalog.update_catalog(**params)
+                return [TextContent(text=json.dumps(result))]
             except Exception as e:
-                logger.error(f"Error updating catalog: {str(e)}")
-                return [{"text": json.dumps({"error": str(e)})}]
+                return [TextContent(text=json.dumps({"error": str(e)}))]
         
         @self.tool(
             name="delete_catalog",
@@ -849,17 +933,31 @@ class DatabricksMCPServer(FastMCP):
             ),
         )
         async def list_tables(params: Dict[str, Any]) -> List[TextContent]:
-            logger.info(f"Listing tables with params: {params}")
+            """List tables in a Unity Catalog schema."""
             try:
-                catalog_name = params.get("catalog_name")
-                schema_name = params.get("schema_name")
-                max_results = params.get("max_results")
-                page_token = params.get("page_token")
-                result = await unity_catalog.list_tables(catalog_name, schema_name, max_results, page_token)
-                return [{"text": json.dumps(result)}]
+                # Validate catalog and schema parameters
+                if "catalog_name" not in params:
+                    raise ValueError("Required parameter 'catalog_name' is missing")
+                
+                if "schema_name" not in params:
+                    raise ValueError("Required parameter 'schema_name' is missing")
+                
+                # Validate parameter types
+                if not isinstance(params["catalog_name"], str) or not params["catalog_name"]:
+                    raise ValueError("catalog_name must be a non-empty string")
+                
+                if not isinstance(params["schema_name"], str) or not params["schema_name"]:
+                    raise ValueError("schema_name must be a non-empty string")
+                
+                # Validate max_results if provided
+                if "max_results" in params:
+                    if not isinstance(params["max_results"], int) or params["max_results"] <= 0:
+                        raise ValueError("max_results must be a positive integer")
+                
+                result = await unity_catalog.list_tables(**params)
+                return [TextContent(text=json.dumps(result))]
             except Exception as e:
-                logger.error(f"Error listing tables: {str(e)}")
-                return [{"text": json.dumps({"error": str(e)})}]
+                return [TextContent(text=json.dumps({"error": str(e)}))]
         
         @self.tool(
             name="get_table",
@@ -2163,31 +2261,48 @@ class DatabricksMCPServer(FastMCP):
             ),
         )
         async def create_warehouse(params: Dict[str, Any]) -> List[TextContent]:
-            logger.info(f"Creating SQL warehouse with params: {params}")
+            """Create a new SQL warehouse."""
             try:
-                name = params.get("name")
-                cluster_size = params.get("cluster_size")
+                # Validate required parameters
+                required_params = ["name", "cluster_size"]
+                for param in required_params:
+                    if param not in params:
+                        raise ValueError(f"Required parameter '{param}' is missing")
                 
-                if not name or not cluster_size:
-                    return [{"text": json.dumps({"error": "name and cluster_size are required parameters"})}]
+                # Validate name format
+                if not isinstance(params["name"], str) or not params["name"]:
+                    raise ValueError("name must be a non-empty string")
                 
-                auto_stop_mins = params.get("auto_stop_mins")
-                min_num_clusters = params.get("min_num_clusters")
-                max_num_clusters = params.get("max_num_clusters")
-                enable_photon = params.get("enable_photon")
+                # Validate cluster_size is a valid size
+                valid_sizes = ["2X-Small", "X-Small", "Small", "Medium", "Large", "X-Large", "2X-Large", "3X-Large", "4X-Large"]
+                if params["cluster_size"] not in valid_sizes:
+                    raise ValueError(f"cluster_size must be one of: {', '.join(valid_sizes)}")
                 
-                result = await warehouses.create_warehouse(
-                    name, 
-                    cluster_size, 
-                    auto_stop_mins, 
-                    min_num_clusters, 
-                    max_num_clusters, 
-                    enable_photon
-                )
-                return [{"text": json.dumps(result)}]
+                # Validate auto_stop_mins is a positive integer if provided
+                if "auto_stop_mins" in params:
+                    if not isinstance(params["auto_stop_mins"], int) or params["auto_stop_mins"] < 0:
+                        raise ValueError("auto_stop_mins must be a non-negative integer")
+                
+                # Validate min_num_clusters and max_num_clusters if provided
+                if "min_num_clusters" in params and (
+                    not isinstance(params["min_num_clusters"], int) or params["min_num_clusters"] < 1
+                ):
+                    raise ValueError("min_num_clusters must be a positive integer")
+                
+                if "max_num_clusters" in params and (
+                    not isinstance(params["max_num_clusters"], int) or params["max_num_clusters"] < 1
+                ):
+                    raise ValueError("max_num_clusters must be a positive integer")
+                
+                # Validate min_num_clusters <= max_num_clusters if both are provided
+                if "min_num_clusters" in params and "max_num_clusters" in params:
+                    if params["min_num_clusters"] > params["max_num_clusters"]:
+                        raise ValueError("min_num_clusters cannot be greater than max_num_clusters")
+                
+                result = await warehouses.create_warehouse(**params)
+                return [TextContent(text=json.dumps(result))]
             except Exception as e:
-                logger.error(f"Error creating SQL warehouse: {str(e)}")
-                return [{"text": json.dumps({"error": str(e)})}]
+                return [TextContent(text=json.dumps({"error": str(e)}))]
         
         @self.tool(
             name="update_warehouse",
@@ -2400,32 +2515,85 @@ class DatabricksMCPServer(FastMCP):
                 budget_id = params.get("budget_id")
                 
                 if not budget_id:
-                    return [{"text": json.dumps({"error": "budget_id is a required parameter"})}]
+                    return [TextContent(type="text", text=json.dumps({"error": "budget_id is a required parameter"}))]
                 
                 result = await budgets.delete_budget(budget_id)
-                return [{"text": json.dumps(result)}]
+                return [TextContent(type="text", text=json.dumps(result))]
             except Exception as e:
                 logger.error(f"Error deleting budget: {str(e)}")
-                return [{"text": json.dumps({"error": str(e)})}]
+                return [TextContent(type="text", text=json.dumps({"error": str(e)}))]
         
         # External Locations tools
         @self.tool(
             name="list_external_locations",
             description=generate_tool_description(
-                external_locations.list_external_locations,
+                external_locations.mcp_list_external_locations,  # Use the MCP wrapper to handle params properly
                 API_ENDPOINTS["list_external_locations"]["method"],
                 API_ENDPOINTS["list_external_locations"]["endpoint"]
             ),
         )
         async def list_external_locations(params: Dict[str, Any]) -> List[TextContent]:
-            logger.info(f"Listing external locations")
+            """List external locations in Unity Catalog."""
             try:
-                max_results = params.get("max_results")
-                result = await external_locations.list_external_locations(max_results)
-                return [{"text": json.dumps(result)}]
+                # Version 4 - direct implementation without any intermediary functions
+                version = 4
+                logger.info(f"List external locations direct implementation, version: {version}")
+                
+                # Ensure params is not None
+                params = params or {}
+                logger.info(f"Parameters: {params}")
+                
+                # Validate max_results is a positive integer if provided
+                if "max_results" in params:
+                    max_results = params["max_results"]
+                    if not isinstance(max_results, int):
+                        error_response = {"error": "'max_results' must be an integer", "version": version}
+                        return [TextContent(type="text", text=json.dumps(error_response))]
+                    if max_results < 0:
+                        error_response = {"error": "'max_results' must be a non-negative integer", "version": version}
+                        return [TextContent(type="text", text=json.dumps(error_response))]
+                    if max_results > 1000:
+                        error_response = {"error": "'max_results' cannot exceed 1000", "version": version}
+                        return [TextContent(type="text", text=json.dumps(error_response))]
+                
+                # Get Databricks credentials
+                host = os.environ.get("DATABRICKS_HOST")
+                token = os.environ.get("DATABRICKS_TOKEN")
+                
+                if not host or not token:
+                    error_response = {"error": "DATABRICKS_HOST and DATABRICKS_TOKEN must be set", "version": version}
+                    return [TextContent(type="text", text=json.dumps(error_response))]
+                
+                # Construct URL and headers
+                url = f"{host}/api/2.1/unity-catalog/external-locations"
+                headers = {
+                    "Authorization": f"Bearer {token}",
+                    "Content-Type": "application/json"
+                }
+
+                # Import here to avoid module level dependency
+                import aiohttp
+                
+                # Make API request using session
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(url, headers=headers, params=params) as response:
+                        status = response.status
+                        response_body = await response.json()
+                        
+                        if status == 200:
+                            response_body["version"] = version
+                            return [TextContent(type="text", text=json.dumps(response_body))]
+                        else:
+                            error_response = {
+                                "error": f"API error: {status} - {response_body.get('message', 'Unknown error')}",
+                                "version": version
+                            }
+                            return [TextContent(type="text", text=json.dumps(error_response))]
+                
             except Exception as e:
                 logger.error(f"Error listing external locations: {str(e)}")
-                return [{"text": json.dumps({"error": str(e)})}]
+                error_response = {"error": str(e), "version": 4}
+                return [TextContent(type="text", text=json.dumps(error_response))]
 
         @self.tool(
             name="create_external_location",
@@ -2436,21 +2604,30 @@ class DatabricksMCPServer(FastMCP):
             ),
         )
         async def create_external_location(params: Dict[str, Any]) -> List[TextContent]:
-            logger.info(f"Creating external location with params: {params}")
+            """Create a new external location in Unity Catalog."""
             try:
-                name = params.get("name")
-                url = params.get("url")
-                credential_name = params.get("credential_name")
-                comment = params.get("comment")
+                # Validate required parameters
+                required_params = ["name", "url", "credential_name"]
+                for param in required_params:
+                    if param not in params:
+                        raise ValueError(f"Required parameter '{param}' is missing")
                 
-                if not name or not url or not credential_name:
-                    return [{"text": json.dumps({"error": "name, url, and credential_name are required parameters"})}]
+                # Validate name format (common Unity Catalog naming rules)
+                if not isinstance(params["name"], str) or not params["name"]:
+                    raise ValueError("'name' must be a non-empty string")
                 
-                result = await external_locations.create_external_location(name, url, credential_name, comment)
-                return [{"text": json.dumps(result)}]
+                # Validate URL format
+                if not isinstance(params["url"], str) or not params["url"]:
+                    raise ValueError("'url' must be a non-empty string")
+                
+                # Validate read_only is boolean if provided
+                if "read_only" in params and not isinstance(params["read_only"], bool):
+                    raise ValueError("'read_only' must be a boolean value")
+                
+                result = await external_locations.create_external_location(**params)
+                return [TextContent(text=json.dumps(result))]
             except Exception as e:
-                logger.error(f"Error creating external location: {str(e)}")
-                return [{"text": json.dumps({"error": str(e)})}]
+                return [TextContent(text=json.dumps({"error": str(e)}))]
         
         @self.tool(
             name="get_external_location",

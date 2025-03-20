@@ -50,26 +50,58 @@ async def create_external_location(
     
     return await make_api_request("POST", "/api/2.1/unity-catalog/external-locations", data=data)
 
-async def list_external_locations(max_results: Optional[int] = None) -> Dict[str, Any]:
+def mcp_list_external_locations(params: Dict[str, Any]) -> Dict[str, Any]:
     """
-    List external locations in Unity Catalog.
-
+    Non-async MCP handler for list_external_locations.
+    This is a special non-async function to work around the issue with dict in await expressions.
+    
     Args:
-        max_results: Optional maximum number of results to return.
+        params: Dictionary of parameters from the MCP server.
+    
+    Returns:
+        Dict containing information about the operation.
+    
+    Raises:
+        ValueError: If the API parameters are invalid.
+    """
+    logger.info("MCP handler: Listing external locations (non-async version)")
+    
+    # Note: This function intentionally doesn't make the API call directly
+    # It's designed to prepare parameters for the parent function in databricks_mcp_server.py
+    # to make the async call properly
+    
+    # Validate parameters if needed
+    if "max_results" in params and not isinstance(params["max_results"], int):
+        raise ValueError("max_results must be an integer")
+    
+    # Just return a dictionary indicating this is a special function
+    # The actual API call will be made by the parent function
+    return {
+        "message": "This is a non-async parameter validator only. The actual API call should be made by the server function.",
+        "params": params
+    }
 
+async def list_external_locations_with_params(params: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    List external locations in Unity Catalog with a params dictionary.
+    
+    Args:
+        params: Dictionary containing request parameters like max_results.
+        
     Returns:
         Dict containing the list of external locations.
-
+        
     Raises:
         DatabricksAPIError: If the API request fails.
     """
-    logger.info("Listing external locations")
+    logger.info(f"Listing external locations with params: {params}")
     
-    params = {}
-    if max_results:
-        params["max_results"] = max_results
-    
-    return await make_api_request("GET", "/api/2.1/unity-catalog/external-locations", params=params)
+    try:
+        # Make a direct API request using the params dictionary
+        return await make_api_request("GET", "/api/2.1/unity-catalog/external-locations", params=params)
+    except Exception as e:
+        logger.error(f"Error listing external locations: {str(e)}")
+        raise
 
 async def get_external_location(name: str) -> Dict[str, Any]:
     """
