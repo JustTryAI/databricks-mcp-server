@@ -23,6 +23,7 @@ dependencies = [
     "mcp[cli]>=1.2.0",
     "httpx",
     "databricks-sdk",
+    "fastmcp>=0.4.1",
 ]
 
 [project.optional-dependencies]

@@ -1,0 +1,19 @@
+# This is a Databricks asset bundle definition for databricks-mcp-server.
+# The Databricks extension requires databricks.yml configuration file.
+# See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
+
+bundle:
+  name: databricks-mcp-server
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://adb-1204921926624638.18.azuredatabricks.net
+
+  ## Optionally, there could be 'staging' or 'prod' targets here.
+  #
+  # prod:
+  #   workspace:
+  #     host: https://adb-1204921926624638.18.azuredatabricks.net

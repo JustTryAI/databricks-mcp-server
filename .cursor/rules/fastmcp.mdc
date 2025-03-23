@@ -1,0 +1,7 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+
+NEVER TRY TO INSTALL fastmcp, use from mcp.server import FastMCP instead

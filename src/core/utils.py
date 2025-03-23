@@ -220,13 +220,16 @@ API_ENDPOINTS = {
     "start_cluster": {"method": "POST", "endpoint": "/api/2.0/clusters/start"},
     "restart_cluster": {"method": "POST", "endpoint": "/api/2.0/clusters/restart"},
     "resize_cluster": {"method": "POST", "endpoint": "/api/2.0/clusters/resize"},
-    "permanent_delete_cluster": {"method": "POST", "endpoint": "/api/2.1/clusters/permanent-delete"},
+    "permanent-delete": {"method": "POST", "endpoint": "/api/2.1/clusters/permanent-delete"},
     
     # Jobs endpoints
+    "create_job": {"method": "POST", "endpoint": "/api/2.0/jobs/create"},
     "list_jobs": {"method": "GET", "endpoint": "/api/2.1/jobs/list"},
     "run_job": {"method": "POST", "endpoint": "/api/2.1/jobs/run-now"},
     "update_job": {"method": "POST", "endpoint": "/api/2.1/jobs/update"},
     "reset_job": {"method": "POST", "endpoint": "/api/2.1/jobs/reset"},
+    "get_job": {"method": "GET", "endpoint": "/api/2.0/jobs/get"},
+    "get_run": {"method": "GET", "endpoint": "/api/2.0/jobs/runs/get"},
     "get_run_output": {"method": "GET", "endpoint": "/api/2.1/jobs/runs/get-output"},
     "list_runs": {"method": "GET", "endpoint": "/api/2.1/jobs/runs/list"},
     "cancel_run": {"method": "POST", "endpoint": "/api/2.1/jobs/runs/cancel"},
